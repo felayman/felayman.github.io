@@ -1,0 +1,234 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java中的Unsafe类 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java中的Unsafe类 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+sun.misc.Unsafe至少从2004年Java1.4开始就存在于Java中了。在Java9中，为了提高JVM的可维护性，Unsafe和许多其他的东西一起都被作为内部使用类隐藏起来了。但是究竟是什么取代Unsafe不得而知，个人推测..." />
+    <meta name="keywords" content="Java" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java中的Unsafe类
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-05-03
+              </span>
+              <span>
+                6 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Java/" class="post-tag">
+                  # Java
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>sun.misc.Unsafe至少从2004年Java1.4开始就存在于Java中了。在Java9中，为了提高JVM的可维护性，Unsafe和许多其他的东西一起都被作为内部使用类隐藏起来了。但是究竟是什么取代Unsafe不得而知，个人推测会有不止一样来取代它，那么问题来了，到底为什么要使用Unsafe？</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>Unsafe类是在sun.misc包下，不属于Java标准。但是很多Java的基础类库，包括一些被广泛使用的高性能开发库都是基于Unsafe类开发的，比如Netty、Cassandra、Hadoop、Kafka等。Unsafe类在提升Java运行效率，增强Java语言底层操作能力方面起了很大的作用。</p>
+<p>Java是一个安全的开发工具，它阻止开发人员犯很多低级的错误，而大部份的错误都是基于内存管理方面的。如果你想搞破坏，可以使用Unsafe这个类。这个类是属于sun.* API中的类，并且它不是J2SE中真正的一部份，因此你可能找不到任何的官方文档，更可悲的是，它也没有比较好的代码文档。</p>
+<p>Unsafe类使Java拥有了像C语言的指针一样操作内存空间的能力，同时也带来了指针的问题。过度的使用Unsafe类会使得出错的几率变大，因此Java官方并不建议使用的，官方文档也几乎没有。Oracle正在计划从Java 9中去掉Unsafe类，如果真是如此影响就太大了。</p>
+<p>通常我们最好也不要使用Unsafe类，除非有明确的目的，并且也要对它有深入的了解才行。要想使用Unsafe类需要用一些比较tricky的办法。Unsafe类使用了单例模式，需要通过一个静态方法getUnsafe()来获取。但Unsafe类做了限制，如果是普通的调用的话，它会抛出一个SecurityException异常；只有由主类加载器加载的类才能调用这个方法。</p>
+<h2 id="unsafe功能">Unsafe功能</h2>
+<h3 id="内存管理">内存管理</h3>
+<p>该部分包括了allocateMemory（分配内存）、reallocateMemory（重新分配内存）、copyMemory（拷贝内存）、freeMemory（释放内存 ）、getAddress（获取内存地址）、addressSize、pageSize、getInt（获取内存地址指向的整数）、getIntVolatile（获取内存地址指向的整数，并支持volatile语义）、putInt（将整数写入指定内存地址）、putIntVolatile（将整数写入指定内存地址，并支持volatile语义）、putOrderedInt（将整数写入指定内存地址、有序或者有延迟的方法）等方法。getXXX和putXXX包含了各种基本类型的操作。</p>
+<p>利用copyMemory方法，我们可以实现一个通用的对象拷贝方法，无需再对每一个对象都实现clone方法，当然这通用的方法只能做到对象浅拷贝。</p>
+<h3 id="非常规的对象实例化">非常规的对象实例化</h3>
+<p>allocateInstance()方法提供了另一种创建实例的途径。通常我们可以用new或者反射来实例化对象，使用allocateInstance()方法可以直接生成对象实例，且无需调用构造方法和其它初始化方法。</p>
+<p>这在对象反序列化的时候会很有用，能够重建和设置final字段，而不需要调用构造方法。</p>
+<h3 id="操作类-对象-变量">操作类、对象、变量</h3>
+<p>这部分包括了staticFieldOffset（静态域偏移）、defineClass（定义类）、defineAnonymousClass（定义匿名类）、ensureClassInitialized（确保类初始化）、objectFieldOffset（对象域偏移）等方法。</p>
+<p>通过这些方法我们可以获取对象的指针，通过对指针进行偏移，我们不仅可以直接修改指针指向的数据（即使它们是私有的），甚至可以找到JVM已经认定为垃圾、可以进行回收的对象。</p>
+<h3 id="数组操作">数组操作</h3>
+<p>这部分包括了arrayBaseOffset（获取数组第一个元素的偏移地址）、arrayIndexScale（获取数组中元素的增量地址）等方法。arrayBaseOffset与arrayIndexScale配合起来使用，就可以定位数组中每个元素在内存中的位置。</p>
+<p>由于Java的数组最大值为Integer.MAX_VALUE，使用Unsafe类的内存分配方法可以实现超大数组。实际上这样的数据就可以认为是C数组，因此需要注意在合适的时间释放内存。</p>
+<h3 id="多线程同步">多线程同步</h3>
+<p>这部分包括了monitorEnter、tryMonitorEnter、monitorExit、compareAndSwapInt、compareAndSwap等方法。</p>
+<p>其中monitorEnter、tryMonitorEnter、monitorExit已经被标记为deprecated，不建议使用。</p>
+<p>Unsafe类的CAS操作可能是用的最多的，它为Java的锁机制提供了一种新的解决办法，比如AtomicInteger等类都是通过该方法来实现的。compareAndSwap方法是原子的，可以避免繁重的锁机制，提高代码效率。这是一种乐观锁，通常认为在大部分情况下不出现竞态条件，如果操作失败，会不断重试直到成功。</p>
+<h3 id="挂起与恢复">挂起与恢复</h3>
+<p>这部分包括了park、unpark等方法。</p>
+<p>将一个线程进行挂起是通过park方法实现的，调用 park后，线程将一直阻塞直到超时或者中断等条件出现。unpark可以终止一个挂起的线程，使其恢复正常。整个并发框架中对线程的挂起操作被封装在 LockSupport类中，LockSupport类中有各种版本pack方法，但最终都调用了Unsafe.park()方法。</p>
+<h3 id="内存屏障">内存屏障</h3>
+<p>这部分包括了loadFence、storeFence、fullFence等方法。这是在Java 8新引入的，用于定义内存屏障，避免代码重排序。</p>
+<p>loadFence() 表示该方法之前的所有load操作在内存屏障之前完成。同理storeFence()表示该方法之前的所有store操作在内存屏障之前完成。fullFence()表示该方法之前的所有load、store操作在内存屏障之前完成。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="http://www.importnew.com/tag/unsafe">Unsafe</a></li>
+<li><a href="http://www.importnew.com/14511.html">Java为什么会引入及如何使用Unsafe</a></li>
+<li><a href="https://www.cnblogs.com/pkufork/p/java_unsafe.html">说一说Java的Unsafe类</a></li>
+<li><a href="https://blog.csdn.net/dfdsggdgg/article/details/51543545">sun.misc.Unsafe的各种神技</a></li>
+<li><a href="https://blog.csdn.net/fenglibing/article/details/17138079">sun.misc.unsafe类的使用</a></li>
+<li><a href="https://blog.csdn.net/jjywen/article/details/51164330">Unsafe</a></li>
+<li><a href="https://www.cnblogs.com/kuillldan/p/7460314.html">Java中反射和Unsafe破坏单例设计模式</a></li>
+<li><a href="http://www.importnew.com/7844.html">危险代码：如何使用Unsafe操作内存中的Java类和对象</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#unsafe%E5%8A%9F%E8%83%BD">Unsafe功能</a>
+<ul>
+<li><a href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">内存管理</a></li>
+<li><a href="#%E9%9D%9E%E5%B8%B8%E8%A7%84%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%AE%9E%E4%BE%8B%E5%8C%96">非常规的对象实例化</a></li>
+<li><a href="#%E6%93%8D%E4%BD%9C%E7%B1%BB-%E5%AF%B9%E8%B1%A1-%E5%8F%98%E9%87%8F">操作类、对象、变量</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84%E6%93%8D%E4%BD%9C">数组操作</a></li>
+<li><a href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5">多线程同步</a></li>
+<li><a href="#%E6%8C%82%E8%B5%B7%E4%B8%8E%E6%81%A2%E5%A4%8D">挂起与恢复</a></li>
+<li><a href="#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C">内存屏障</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/elasticsearch-zhi-client-xiang-jie-yi-ji-client-fu-zai-jun-heng/">
+              <h3 class="post-title">
+                Elasticsearch之Client详解以及Client负载均衡
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://felayman.github.io</id>
     <title>felayman</title>
-    <updated>2021-10-29T12:15:17.916Z</updated>
+    <updated>2021-10-29T12:42:01.315Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://felayman.github.io"/>
     <link rel="self" href="https://felayman.github.io/atom.xml"/>
@@ -16,5 +16,965 @@
         <link href="https://felayman.github.io/post/hello-gridea/">
         </link>
         <updated>2018-12-11T16:00:00.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[2018年度收藏好文]]></title>
+        <id>https://felayman.github.io/post/2018-nian-du-shou-cang-hao-wen/</id>
+        <link href="https://felayman.github.io/post/2018-nian-du-shou-cang-hao-wen/">
+        </link>
+        <updated>2018-05-06T12:40:09.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>本文收藏2018年看过的的比较好的文章</p>
+</blockquote>
+<h2 id="优秀技术团队博客">优秀技术团队博客</h2>
+<ul>
+<li><a href="http://jm.taobao.org/about/">阿里中间件团队博客</a></li>
+<li><a href="https://tech.meituan.com/">美团点评技术团队</a></li>
+<li><a href="https://tech.youzan.com/">有赞技术团队</a></li>
+<li><a href="http://tech.lede.com/">网易乐得技术团队</a></li>
+</ul>
+<h2 id="精华文章">精华文章</h2>
+<ul>
+<li><a href="http://www.importnew.com/24783.html">Unsafe 与 CAS</a></li>
+<li><a href="https://www.jianshu.com/p/5ace2a0cafa4">初步诊断你的GC</a></li>
+<li><a href="https://blog.csdn.net/tjiyu/article/details/53983650"> Java虚拟机垃圾回收(三) 7种垃圾收集器：主要特点 应用场景 设置参数 基本运行原理</a></li>
+<li><a href="https://blog.csdn.net/google19890102/article/details/28112091"> 简单易学的机器学习算法——协同过滤推荐算法(1)</a></li>
+<li><a href="http://blog.jobbole.com/111680/">数据结构中各种树</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/21673805">Java 8系列之重新认识HashMap</a></li>
+<li><a href="http://www.cnblogs.com/luyucheng/p/6289048.html">MySQL索引方法</a></li>
+<li><a href="http://www.cnblogs.com/luyucheng/p/6297752.html">MySQL锁详解</a></li>
+<li><a href="http://rednaxelafx.iteye.com/blog/656951">关于Java程序的执行的一次分享</a></li>
+<li><a href="http://www.iocoder.cn/Architecture/books-recommended/?jianshu&amp;407">源码圈 300 胖友的书单整理</a></li>
+<li><a href="http://warrentalk.site/2017/07/13/%E4%BB%8EJava6%E5%88%B0Java8-%E4%BD%A0%E5%BA%94%E8%AF%A5%E7%9F%A5%E9%81%93%E7%9A%84JVM%E6%96%B0%E7%89%B9%E6%80%A7/">从Java6到Java8: 你应该知道的JVM新特性</a></li>
+<li><a href="http://www.importnew.com/14933.html">Java 8新特性探究（九）跟OOM：Permgen说再见吧</a></li>
+<li><a href="https://baijiahao.baidu.com/s?id=1575795385931862&amp;wfr=spider&amp;for=pc">顶级java架构师教你如何构建公司自己APM性能监控解决方案</a></li>
+<li><a href="http://mp.weixin.qq.com/s/ad7jibTb5nTzh3nDQYKFeg">消息中间件选型分析</a></li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/tengdazhang770960436/article/details/49963983">各大技术团队博客</a></li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Java中的Unsafe类]]></title>
+        <id>https://felayman.github.io/post/java-zhong-de-unsafe-lei/</id>
+        <link href="https://felayman.github.io/post/java-zhong-de-unsafe-lei/">
+        </link>
+        <updated>2018-05-03T12:40:48.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>sun.misc.Unsafe至少从2004年Java1.4开始就存在于Java中了。在Java9中，为了提高JVM的可维护性，Unsafe和许多其他的东西一起都被作为内部使用类隐藏起来了。但是究竟是什么取代Unsafe不得而知，个人推测会有不止一样来取代它，那么问题来了，到底为什么要使用Unsafe？</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>Unsafe类是在sun.misc包下，不属于Java标准。但是很多Java的基础类库，包括一些被广泛使用的高性能开发库都是基于Unsafe类开发的，比如Netty、Cassandra、Hadoop、Kafka等。Unsafe类在提升Java运行效率，增强Java语言底层操作能力方面起了很大的作用。</p>
+<p>Java是一个安全的开发工具，它阻止开发人员犯很多低级的错误，而大部份的错误都是基于内存管理方面的。如果你想搞破坏，可以使用Unsafe这个类。这个类是属于sun.* API中的类，并且它不是J2SE中真正的一部份，因此你可能找不到任何的官方文档，更可悲的是，它也没有比较好的代码文档。</p>
+<p>Unsafe类使Java拥有了像C语言的指针一样操作内存空间的能力，同时也带来了指针的问题。过度的使用Unsafe类会使得出错的几率变大，因此Java官方并不建议使用的，官方文档也几乎没有。Oracle正在计划从Java 9中去掉Unsafe类，如果真是如此影响就太大了。</p>
+<p>通常我们最好也不要使用Unsafe类，除非有明确的目的，并且也要对它有深入的了解才行。要想使用Unsafe类需要用一些比较tricky的办法。Unsafe类使用了单例模式，需要通过一个静态方法getUnsafe()来获取。但Unsafe类做了限制，如果是普通的调用的话，它会抛出一个SecurityException异常；只有由主类加载器加载的类才能调用这个方法。</p>
+<h2 id="unsafe功能">Unsafe功能</h2>
+<h3 id="内存管理">内存管理</h3>
+<p>该部分包括了allocateMemory（分配内存）、reallocateMemory（重新分配内存）、copyMemory（拷贝内存）、freeMemory（释放内存 ）、getAddress（获取内存地址）、addressSize、pageSize、getInt（获取内存地址指向的整数）、getIntVolatile（获取内存地址指向的整数，并支持volatile语义）、putInt（将整数写入指定内存地址）、putIntVolatile（将整数写入指定内存地址，并支持volatile语义）、putOrderedInt（将整数写入指定内存地址、有序或者有延迟的方法）等方法。getXXX和putXXX包含了各种基本类型的操作。</p>
+<p>利用copyMemory方法，我们可以实现一个通用的对象拷贝方法，无需再对每一个对象都实现clone方法，当然这通用的方法只能做到对象浅拷贝。</p>
+<h3 id="非常规的对象实例化">非常规的对象实例化</h3>
+<p>allocateInstance()方法提供了另一种创建实例的途径。通常我们可以用new或者反射来实例化对象，使用allocateInstance()方法可以直接生成对象实例，且无需调用构造方法和其它初始化方法。</p>
+<p>这在对象反序列化的时候会很有用，能够重建和设置final字段，而不需要调用构造方法。</p>
+<h3 id="操作类-对象-变量">操作类、对象、变量</h3>
+<p>这部分包括了staticFieldOffset（静态域偏移）、defineClass（定义类）、defineAnonymousClass（定义匿名类）、ensureClassInitialized（确保类初始化）、objectFieldOffset（对象域偏移）等方法。</p>
+<p>通过这些方法我们可以获取对象的指针，通过对指针进行偏移，我们不仅可以直接修改指针指向的数据（即使它们是私有的），甚至可以找到JVM已经认定为垃圾、可以进行回收的对象。</p>
+<h3 id="数组操作">数组操作</h3>
+<p>这部分包括了arrayBaseOffset（获取数组第一个元素的偏移地址）、arrayIndexScale（获取数组中元素的增量地址）等方法。arrayBaseOffset与arrayIndexScale配合起来使用，就可以定位数组中每个元素在内存中的位置。</p>
+<p>由于Java的数组最大值为Integer.MAX_VALUE，使用Unsafe类的内存分配方法可以实现超大数组。实际上这样的数据就可以认为是C数组，因此需要注意在合适的时间释放内存。</p>
+<h3 id="多线程同步">多线程同步</h3>
+<p>这部分包括了monitorEnter、tryMonitorEnter、monitorExit、compareAndSwapInt、compareAndSwap等方法。</p>
+<p>其中monitorEnter、tryMonitorEnter、monitorExit已经被标记为deprecated，不建议使用。</p>
+<p>Unsafe类的CAS操作可能是用的最多的，它为Java的锁机制提供了一种新的解决办法，比如AtomicInteger等类都是通过该方法来实现的。compareAndSwap方法是原子的，可以避免繁重的锁机制，提高代码效率。这是一种乐观锁，通常认为在大部分情况下不出现竞态条件，如果操作失败，会不断重试直到成功。</p>
+<h3 id="挂起与恢复">挂起与恢复</h3>
+<p>这部分包括了park、unpark等方法。</p>
+<p>将一个线程进行挂起是通过park方法实现的，调用 park后，线程将一直阻塞直到超时或者中断等条件出现。unpark可以终止一个挂起的线程，使其恢复正常。整个并发框架中对线程的挂起操作被封装在 LockSupport类中，LockSupport类中有各种版本pack方法，但最终都调用了Unsafe.park()方法。</p>
+<h3 id="内存屏障">内存屏障</h3>
+<p>这部分包括了loadFence、storeFence、fullFence等方法。这是在Java 8新引入的，用于定义内存屏障，避免代码重排序。</p>
+<p>loadFence() 表示该方法之前的所有load操作在内存屏障之前完成。同理storeFence()表示该方法之前的所有store操作在内存屏障之前完成。fullFence()表示该方法之前的所有load、store操作在内存屏障之前完成。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="http://www.importnew.com/tag/unsafe">Unsafe</a></li>
+<li><a href="http://www.importnew.com/14511.html">Java为什么会引入及如何使用Unsafe</a></li>
+<li><a href="https://www.cnblogs.com/pkufork/p/java_unsafe.html">说一说Java的Unsafe类</a></li>
+<li><a href="https://blog.csdn.net/dfdsggdgg/article/details/51543545">sun.misc.Unsafe的各种神技</a></li>
+<li><a href="https://blog.csdn.net/fenglibing/article/details/17138079">sun.misc.unsafe类的使用</a></li>
+<li><a href="https://blog.csdn.net/jjywen/article/details/51164330">Unsafe</a></li>
+<li><a href="https://www.cnblogs.com/kuillldan/p/7460314.html">Java中反射和Unsafe破坏单例设计模式</a></li>
+<li><a href="http://www.importnew.com/7844.html">危险代码：如何使用Unsafe操作内存中的Java类和对象</a></li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Elasticsearch之Client详解以及Client负载均衡]]></title>
+        <id>https://felayman.github.io/post/elasticsearch-zhi-client-xiang-jie-yi-ji-client-fu-zai-jun-heng/</id>
+        <link href="https://felayman.github.io/post/elasticsearch-zhi-client-xiang-jie-yi-ji-client-fu-zai-jun-heng/">
+        </link>
+        <updated>2018-04-20T12:41:30.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>ElasticSearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是当前流行的企业级搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>ElasticSearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是当前流行的企业级搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。</p>
+<h2 id="client架构设计">Client架构设计</h2>
+<p>整个Elasticsearch-Client的基础架构图如下:</p>
+<figure data-type="image" tabindex="1"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/Elasticsearch/elasticsearchclient.png" alt="" loading="lazy"></figure>
+<p>在上图中我们可以看到,Client的核心设计目的是作为请求转发(也实现了客户端请求的负载均衡),当然Client本身也会处理一部分请求(比如NodeClient),后面会详细说明</p>
+<p>整个Elasticsearch-Client的类图层级结构如下:</p>
+<figure data-type="image" tabindex="2"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/Elasticsearch/ElasticsearchClient.png" alt="" loading="lazy"></figure>
+<h2 id="client层级解剖">Client层级解剖</h2>
+<p><strong>1. 顶级抽象接口</strong></p>
+<ul>
+<li>ElasticsearchClient</li>
+<li>AbstractComponent</li>
+<li>AdminClient</li>
+</ul>
+<p>这三个接口构建了整个Elasticsearch的顶层Client的定义,ElasticsearchClient定义了基本的request-response模式的接口方法,以及整个请求-响应执行的线程池,ElasticsearchClient的核心接口如下:</p>
+<pre><code class="language-java">public interface ElasticsearchClient {
+  &lt;Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder&lt;Request, Response, RequestBuilder&gt;&gt; ActionFuture&lt;Response&gt; execute(
+            Action&lt;Request, Response, RequestBuilder&gt; action, Request request);
+  &lt;Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder&lt;Request, Response, RequestBuilder&gt;&gt; void execute(
+              Action&lt;Request, Response, RequestBuilder&gt; action, Request request, ActionListener&lt;Response&gt; listener);
+  &lt;Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder&lt;Request, Response, RequestBuilder&gt;&gt; RequestBuilder prepareExecute(
+     Action&lt;Request, Response, RequestBuilder&gt; action);
+  ThreadPool threadPool();
+}
+</code></pre>
+<p>而AbstractComponent则是Elasticsearch一个抽象组件,其核心功能有三个:</p>
+<ul>
+<li>持有Settings,提供给具体实现类使用</li>
+<li>全局Logger的管理,用于全局记录组件日志</li>
+<li>记录不再建议使用的使用事项</li>
+</ul>
+<p>其核心源码如下:</p>
+<pre><code class="language-java">public abstract class AbstractComponent {
+    protected final Logger logger;
+    protected final DeprecationLogger deprecationLogger;
+    protected final Settings settings;
+}
+</code></pre>
+<p>AdminClient是Elasticsearch设计上的一个业务划分,将对Elasticsearch的管理分为两个部分:</p>
+<ol>
+<li>对集群的管理</li>
+<li>对索引的管理</li>
+</ol>
+<p>两者的区别在于请求的目的,前者的请求目的是与集群相关的操作,后者是目的是与索引相关的操作,具体的区别详情在后面会涉及到.</p>
+<p>其核心源码如下:</p>
+<pre><code class="language-java">public interface AdminClient {
+   ClusterAdminClient cluster();
+   IndicesAdminClient indices();
+}
+</code></pre>
+<p>这样设计的好处在于,可以很好的设计出针对不同用户群体的API,比如应用类程序可能会更关注与对索引的API开发,而监控类程序可能会更关注与对集群的API开发.</p>
+<p><strong>3. 顶级抽象接口扩展</strong></p>
+<ul>
+<li>Client</li>
+<li>AbstractClient</li>
+</ul>
+<p>Client与AbstractClient是上述三个顶级抽象接口的扩展,一般来说,顶级接口越抽象,功能便会越独立,这种设计也是符合设计原则中的——单一职责原则和接口隔离原则</p>
+<p>ElasticsearchClient、AbstractComponent、AdminClient从设计原则的角度上来说,只是一个独立设计的顶层抽象接口,如何将这些抽象进行集成,提供完备的客户端服务,则是Client和AbstractClient来考虑的事情.</p>
+<p>Client的职责是将AdminClient和ElasticsearchClient的功能进行组合抽象,目的是抽象出一个既能支持请求-响应模式的调度方式,也能将请求进行归类处理的接口.</p>
+<p>因为ElasticsearchClient所能提供的核心服务,只是定义了请求-响应的调度模式,但是具体谁来完成该调度模式则是需要AdminClient来完成,因此,Client提供了这种功能,在此基础之上,Client还抽象出一些经常使用的API,如get、index、update、delete、bulk、search等使用频率非常之高的抽象API.</p>
+<p>Client的部分源码如下:</p>
+<pre><code class="language-java">public interface Client extends ElasticsearchClient, Releasable {
+  AdminClient admin();
+  ActionFuture&lt;IndexResponse&gt; index(IndexRequest request);
+  ActionFuture&lt;UpdateResponse&gt; update(UpdateRequest request);
+  ActionFuture&lt;DeleteResponse&gt; delete(DeleteRequest request);
+  ActionFuture&lt;BulkResponse&gt; bulk(BulkRequest request);
+  ActionFuture&lt;GetResponse&gt; get(GetRequest request);
+  ActionFuture&lt;SearchResponse&gt; search(SearchRequest request);
+  ......
+}
+</code></pre>
+<p>这里我们了解到,Client设计的核心作用有三个:</p>
+<ol>
+<li>提供获取AdminClient的方式</li>
+<li>定义请求的处理模型</li>
+<li>封装常用的请求操作API</li>
+</ol>
+<p>注意:</p>
+<blockquote>
+<p>Client并不提供真正的请求处理能力,只是定义了处理请求的框架和一些常用API.</p>
+</blockquote>
+<p>我们看看AbstractClient做了哪些工作?</p>
+<p>首先我们知道Client定义了一些常用的API,这些API归根结底仍然是请求-响应模式的具体实现,所以AbstractClient会将Client封装常用的API转换成请求-响应的处理模式.</p>
+<p>其次我们了解Client提供了获取AdminClient的方式,那么我们想使用具体的AdminClient该怎么办呢? 此时AbstractClient内部持有一个Admin,而Admin是AdminClient的具体实现类,且Admin内部也是同时持有ClusterAdminClient和IndicesAdminClient两个接口的具体实现,因此AbstractClient已经基本能开始工作了,因为内部该有的实现类都已经有了.</p>
+<p>我们先来看下AdminClient的部分源码:</p>
+<pre><code class="language-java">static class Admin implements AdminClient {
+    private final ClusterAdmin clusterAdmin;
+    private final IndicesAdmin indicesAdmin;
+}
+</code></pre>
+<p>ClusterAdmin部分源码:</p>
+<pre><code class="language-java">static class ClusterAdmin implements ClusterAdminClient {
+  private final ElasticsearchClient client;
+  ClusterAdmin(ElasticsearchClient client) {
+            this.client = client;
+        }
+}
+</code></pre>
+<p>IndicesAdmin部分源码:</p>
+<pre><code class="language-java">static class IndicesAdmin implements IndicesAdminClient {
+   private final ElasticsearchClient client;
+   IndicesAdmin(ElasticsearchClient client) {
+            this.client = client;
+        }
+
+</code></pre>
+<p>看到上面的代码,有没有觉得很熟悉呢? 没错 ClusterAdmin、IndicesAdmin的设计跟Java IO的设计一样,其内部都是持有一个ElasticsearchClient,自身只是对ElasticsearchClient进行了装饰,典型的装饰模式,这里装饰的目的是想给ElasticsearchClient提供了额外的功能,因为ElasticsearchClient本身并不具备IndicesAdminClient或者ClusterAdminClient的能力,但是分别让ClusterAdminClient和IndicesAdminClient对ElasticsearchClient进行装饰,则ElasticsearchClient对外而言,也就有了IndicesAdminClient和ClusterAdminClient所提供的功能了</p>
+<p>关于装饰模式,请参考:<a href="http://www.runoob.com/design-pattern/decorator-pattern.html">装饰模式</a></p>
+<p>那么说了半天,AbstractComponent作为一个顶层抽象,还没讲到它有什么作用,其实AbstractComponent在Elasticsearch的核心,是许多组件的鼻祖,但是它所提供的抽象服务仅仅是在整个庞大Elasticsearch架构中都必不可少的,其核心作用在上面已经介绍了,这里我着重说下它的一个属性Settings</p>
+<p>Settings会保存一系列的配置信息,用于影响请求被调用执行的过程.</p>
+<p>至此,整个Client的基础架构已经完备,接下来就是如何构建不同环境所需要的AbstractClient示例了,根据Client的用途不同,Elasticsearch设计出三种不同的Client实现:</p>
+<ul>
+<li>FilterClient  装饰Client,用于动态扩展原始Client的功能</li>
+<li>NodeClient   本地Client,所有请求会在本地节点执行(当然当前节点属于集群的一个节点)</li>
+<li>TransportClient  传输客户端,该Client不能处理请求,只能将请求转发到其他节点</li>
+</ul>
+<p>其中PreBuiltTransportClient是TransportClient的具体实现,使用netty作为传输协议来进行请求转发,ParentTaskAssigningClient是FilterClient的具体实现,用于处理关联任务的Client</p>
+<h2 id="client负载均衡">Client负载均衡</h2>
+<p>Client的负载均衡是通过TransportClientNodesService类实现的。TransportClientNodesService实例维护一组DiscoveryNode引用，每次客户端请求的时候，会根据负载均衡算法选中一个节点（DiscoveryNode），发送请求。常用的负载算法有Random，Round robin，Hash，StaticWeighted等。ES的客户端负载使用了Round robin算法。</p>
+<p>Round robin(轮询调度)算法的思想是:</p>
+<p>了解更多Round robin(轮询调度),请参考:<a href="https://blog.csdn.net/pzw_0612/article/details/47357221">Round Robin 概念理解</a></p>
+<p>算法核心如下:</p>
+<pre><code class="language-java">public &lt;Response&gt; void execute(NodeListenerCallback&lt;Response&gt; callback, ActionListener&lt;Response&gt; listener) {
+        // we first read nodes before checking the closed state; this
+        // is because otherwise we could be subject to a race where we
+        // read the state as not being closed, and then the client is
+        // closed and the nodes list is cleared, and then a
+        // NoNodeAvailableException is thrown
+        // it is important that the order of first setting the state of
+        // closed and then clearing the list of nodes is maintained in
+        // the close method
+        final List&lt;DiscoveryNode&gt; nodes = this.nodes;
+        if (closed) {
+            throw new IllegalStateException(&quot;transport client is closed&quot;);
+        }
+        ensureNodesAreAvailable(nodes);
+        int index = getNodeNumber();
+        RetryListener&lt;Response&gt; retryListener = new RetryListener&lt;&gt;(callback, listener, nodes, index, hostFailureListener);
+        DiscoveryNode node = retryListener.getNode(0);
+        try {
+            callback.doWithNode(node, retryListener);
+        } catch (Exception e) {
+            try {
+                //this exception can't come from the TransportService as it doesn't throw exception at all
+                listener.onFailure(e);
+            } finally {
+                retryListener.maybeNodeFailed(node, e);
+            }
+        }
+    }
+</code></pre>
+<p>其中retryListener.getNode(0)是Round robin算法的具体实现:</p>
+<pre><code class="language-java"> return nodes.get((index + i) % nodes.size());
+</code></pre>
+<h2 id="restclient实现负载均衡">RestClient实现负载均衡</h2>
+<p>我们都知道RestClient的构建方式如下:</p>
+<pre><code class="language-java">RestClient = restClient = RestClient.builder(
+           new HttpHost(&quot;192.168.0.1&quot;,9200),
+           new HttpHost(&quot;192.168.0.2&quot;,9200),
+           new HttpHost(&quot;192.168.0.3&quot;,9200)
+       ).build();
+</code></pre>
+<p>RestClient通过HttpHost来保存每个节点的连接信息,而每个节点信息都会保存在一个HttpHost[] hosts中,然后通过轮询的方式,保证每次请求获取到的都是数组中的下一个地址信息</p>
+<p>部分源码如下:</p>
+<pre><code class="language-java">
+private HostTuple&lt;Iterator&lt;HttpHost&gt;&gt; nextHost() {
+        final HostTuple&lt;Set&lt;HttpHost&gt;&gt; hostTuple = this.hostTuple;
+        Collection&lt;HttpHost&gt; nextHosts = Collections.emptySet();
+        do {
+            Set&lt;HttpHost&gt; filteredHosts = new HashSet&lt;&gt;(hostTuple.hosts);
+            for (Map.Entry&lt;HttpHost, DeadHostState&gt; entry : blacklist.entrySet()) {
+                if (System.nanoTime() - entry.getValue().getDeadUntilNanos() &lt; 0) {
+                    filteredHosts.remove(entry.getKey());
+                }
+            }
+            if (filteredHosts.isEmpty()) {
+                //last resort: if there are no good host to use, return a single dead one, the one that's closest to being retried
+                List&lt;Map.Entry&lt;HttpHost, DeadHostState&gt;&gt; sortedHosts = new ArrayList&lt;&gt;(blacklist.entrySet());
+                if (sortedHosts.size() &gt; 0) {
+                    Collections.sort(sortedHosts, new Comparator&lt;Map.Entry&lt;HttpHost, DeadHostState&gt;&gt;() {
+                        @Override
+                        public int compare(Map.Entry&lt;HttpHost, DeadHostState&gt; o1, Map.Entry&lt;HttpHost, DeadHostState&gt; o2) {
+                            return Long.compare(o1.getValue().getDeadUntilNanos(), o2.getValue().getDeadUntilNanos());
+                        }
+                    });
+                    HttpHost deadHost = sortedHosts.get(0).getKey();
+                    logger.trace(&quot;resurrecting host [&quot; + deadHost + &quot;]&quot;);
+                    nextHosts = Collections.singleton(deadHost);
+                }
+            } else {
+                List&lt;HttpHost&gt; rotatedHosts = new ArrayList&lt;&gt;(filteredHosts);
+                Collections.rotate(rotatedHosts, rotatedHosts.size() - lastHostIndex.getAndIncrement());
+                nextHosts = rotatedHosts;
+            }
+        } while(nextHosts.isEmpty());
+        return new HostTuple&lt;&gt;(nextHosts.iterator(), hostTuple.authCache);
+    }
+</code></pre>
+<p>核心代码就一行:</p>
+<pre><code class="language-java">  Collections.rotate(rotatedHosts, rotatedHosts.size() - lastHostIndex.getAndIncrement());
+</code></pre>
+<p>看的出来,这里RestClient采取更好的自旋方式,来保证每次请求都会调用下一个节点.</p>
+<p>关于Collections.rotate,可以参考:<a href="https://blog.csdn.net/u014532901/article/details/52891183#rotate%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8"> Collections类中常用算法之Rotate</a></p>
+<h2 id="总结">总结</h2>
+<p>Elasticsearch的Client的构建体系设计的非常巧妙,主要体现在如下几点:</p>
+<ul>
+<li>多种不同的Client支持,如支持本地的NodeClient,支持Netty的TransportClient,也支持异步nio的RestClient</li>
+<li>职责划分清晰,负责集管理的ClusterAdminClient,负责索引管理的IndicesAdminClient</li>
+<li>Client负载均衡算法简单高效</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Java IO]]></title>
+        <id>https://felayman.github.io/post/java-io/</id>
+        <link href="https://felayman.github.io/post/java-io/">
+        </link>
+        <updated>2018-04-02T12:39:18.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>相对各种开源框架进行深入学习和了解,则Java IO是必须要进行深入了解的,本文则集大家之成,来描述Java IO的大家族.</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>我们将带着下面的问题来系统性的学习Java IO框架</p>
+<ol>
+<li>Java为什么要设计IO系统?</li>
+<li>Java I/O演进之路</li>
+<li>为什么会出现NIO?</li>
+<li>为什么又出现AIO?</li>
+<li>看优秀开源框架如何使用NIO/AIO编程,如Netty,Tomcat</li>
+<li>使用原生的NIO/AIO还是Netty,Mina?</li>
+</ol>
+<h2 id="术语">术语</h2>
+<blockquote>
+<p>同步IO和异步IO的区别就在于：数据拷贝的时候进程是否阻塞！　阻塞IO和非阻塞IO的区别就在于：应用程序的调用是否立即返回！</p>
+</blockquote>
+<h3 id="同步">同步</h3>
+<p>所谓同步，就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。也就是必须一件一件事做,等前一件做完了才能做下一件事</p>
+<p>例如普通B/S模式（同步）：提交请求-&gt;等待服务器处理-&gt;处理完毕返回 这个期间客户端浏览器不能干任何事</p>
+<h3 id="异步">异步</h3>
+<p>异步的概念和同步相对。当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者。</p>
+<p>例如 ajax请求（异步）: 请求通过事件触发-&gt;服务器处理（这是浏览器仍然可以作其他事情）-&gt;处理完毕</p>
+<h3 id="阻塞">阻塞</h3>
+<p>阻塞调用是指调用结果返回之前，当前线程会被挂起（线程进入非可执行状态，在这个状态下，cpu不会给线程分配时间片，即线程暂停运行）。函数只有在得到结果之后才会返回。</p>
+<p>###　非阻塞</p>
+<p>非阻塞和阻塞的概念相对应，指在不能立刻得到结果之前，该函数不会阻塞当前线程，而会立刻返回。</p>
+<h3 id="io模型">IO模型</h3>
+<ul>
+<li>阻塞IO模型</li>
+</ul>
+<p>进程会一直阻塞，直到数据拷贝完成</p>
+<ul>
+<li>非阻塞IO模型</li>
+</ul>
+<p>非阻塞IO通过进程反复调用IO函数（多次系统调用，并马上返回）；在数据拷贝的过程中，进程是阻塞的；</p>
+<ul>
+<li>IO复用模型</li>
+</ul>
+<p>主要是select和epoll；对一个IO端口，两次调用，两次返回，比阻塞IO并没有什么优越性；关键是能实现同时对多个IO端口进行监听；</p>
+<ul>
+<li>信号驱动IO</li>
+</ul>
+<p>两次调用，两次返回；</p>
+<ul>
+<li>异步IO模型</li>
+</ul>
+<p>数据拷贝的时候进程无需阻塞。</p>
+<p>前四种都是同步，只有最后一种才是异步IO。</p>
+<p>注:</p>
+<blockquote>
+<p>关于每种IO模型的具体实现,会在后文逐渐介绍,如果想直接了解,请参考<a href="https://blog.csdn.net/jay900323/article/details/18141217">Linux五种IO模型性能分析</a></p>
+</blockquote>
+<h2 id="正文">正文</h2>
+<h3 id="1-java为什么要设计io系统">1. Java为什么要设计IO系统?</h3>
+<p>Java 的IO系统解决的主要问题是系统IO模块和Java Heap区域间的数据通信,Java的设计者最开始使用&quot;流&quot;的概念来设计Java的IO系统,</p>
+<p>流(stream)的概念源于UNIX中管道(pipe)的概念。在UNIX中，管道是一条不间断的字节流，用来实现程序或进程间的通信，或读写外围设备、外部文件等。</p>
+<p>一个流，必有源端和目的端，它们可以是计算机内存的某些区域，也可以是磁盘文件，甚至可以是Internet上的某个URL。</p>
+<p>流的方向是重要的，根据流的方向，流可分为两类：输入流和输出流。用户可以从输入流中读取信息，但不能写它。相反，对输出流，只能往输入流写，而不能读它。</p>
+<p>对于Java而言,数据从Java Heap传输到IO模块则称之为输出流,相反则称之为输入流(输入输出的概念是针对于Java Heap而言,数据流入Java Heap则是输入流,反之为输出流)</p>
+<figure data-type="image" tabindex="1"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io1.png" alt="" loading="lazy"></figure>
+<p>不同的数据载体在Java IO中有不同的对象来进行抽象,入下图:</p>
+<figure data-type="image" tabindex="2"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io2.png" alt="" loading="lazy"></figure>
+<p>我们通过上图可以看出,Java IO对输入/输出流的抽象是镜像的,这也为后来的NIO的Channel的引入提供了非常好的先天条件.</p>
+<p>不同的抽象对于Java来说, 用&quot;适配&quot;一词更为合适, 对于整个IO体系,从宏观上看,其实就是针对不同的数据载体进行适配,从设计模式上来看,是很典型的适配器模式</p>
+<p>下面我们来看看Java IO的演进之路,在这个方向上我们可以很清晰的了解到不同阶段的Java IO系统的设计的优缺点</p>
+<h3 id="2-java-io演进之路">2. Java I/O演进之路</h3>
+<h4 id="jdk10">JDK1.0</h4>
+<h5 id="1-类库设计">1. 类库设计</h5>
+<p>在JDK1.0中, Java IO的传输抽象核心是&quot;字节&quot;,即Java的设计者认为从Java Heap 到 &quot;数据载体&quot;间的数据传输是通过字节来完成的,这个设想本身是非常好的,<br>
+但同时也过于抽象</p>
+<p>关于输入流的设计大概如下:</p>
+<figure data-type="image" tabindex="3"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io3.png" alt="" loading="lazy"></figure>
+<p>下面是IO中输入字节流的继承图:</p>
+<ul>
+<li>InputStream
+<ul>
+<li>ByteArrayInputStream</li>
+<li>FileInputStream</li>
+<li>FilterInputStream
+<ul>
+<li>BufferedInputStream</li>
+<li>DataInputStream</li>
+<li>LineNumberInputStream</li>
+<li>PushbackInputStream</li>
+</ul>
+</li>
+<li>ObjectInputStream</li>
+<li>PipedInputStream</li>
+<li>SequenceInputStream</li>
+<li>StringBufferInputStream</li>
+</ul>
+</li>
+</ul>
+<p>在上面的关系图中可以看出：</p>
+<ul>
+<li>InputStream是所有的输入字节流的父类，它是一个抽象类</li>
+<li>ByteArrayInputStream、StringBufferInputStream、FileInputStream是三种基本的介质流，它们分别将Byte数组、StringBuffer、和本地文件中读取数据。PipedInputStream是从与其它线程共用的管道中读取数据，与Piped相关的知识会用专门的一小节讲解</li>
+<li>ObjectInputStream和所有FilterInputStream的子类都是装饰流（装饰器模式的主角）。下表列出了这些流的功能及如何使用它们（具体使用在讲解完装饰器模式后会举几个例子）</li>
+</ul>
+<p>关于输出流的设计大概如下:</p>
+<figure data-type="image" tabindex="4"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io4.png" alt="" loading="lazy"></figure>
+<p>下面是IO中输入字节流的继承图:</p>
+<ul>
+<li>OutputStream
+<ul>
+<li>FilterOutputStream
+<ul>
+<li>BufferedOutputStream</li>
+<li>DataOutputStream</li>
+<li>PrintStream</li>
+</ul>
+</li>
+<li>ByteArrayOutputStream</li>
+<li>ObjectOutputStream</li>
+<li>PipedOutpuStream</li>
+<li>SequenceOutpuStream</li>
+</ul>
+</li>
+</ul>
+<p>因此在JDK1.0中,整个IO类库的设计大概入下:</p>
+<figure data-type="image" tabindex="5"><img src="http://processon.com/chart_image/5ac605ade4b00dc8a02ebc6c.png" alt="" loading="lazy"></figure>
+<h5 id="2设计细节">2.设计细节</h5>
+<p>我们从上面的类库可以看到,在JDK1.0中,两个核心的抽象类:InputStream和OutputStream</p>
+<p>其中InputStream是所有输入流的父类,OutputStream是所有输出流的父类,我们详细看看两个顶级父类,在JDK1.0中的IO系统中的核心抽象API</p>
+<p>InputStream的核心源码(基于JDK8,去除源码中的注释):</p>
+<pre><code class="language-java">public abstract class InputStream implements Closeable {
+      //用于skip方法，和skipBuffer相关
+      private static final int MAX_SKIP_BUFFER_SIZE = 2048;
+      //从输入流中读取下一个字节正常返回0-255，到达文件的末尾返回-1,请注意,该方法会阻塞
+      public abstract int read() throws IOException;
+      public int read(byte b[]) throws IOException {
+                return read(b, 0, b.length);
+            }
+      //将流中的数据读入放在byte数组的第off个位置先后的len个位置中,返回值为放入字节的个数
+      public int read(byte b[], int off, int len) throws IOException {
+                    if (b == null) {
+                        throw new NullPointerException();
+                    } else if (off &lt; 0 || len &lt; 0 || len &gt; b.length - off) {
+                        throw new IndexOutOfBoundsException();
+                    } else if (len == 0) {
+                        return 0;
+                    }
+            
+                    int c = read();
+                    if (c == -1) {
+                        return -1;
+                    }
+                    b[off] = (byte)c;
+            
+                    int i = 1;
+                    try {
+                        for (; i &lt; len ; i++) {
+                            c = read();
+                            if (c == -1) {
+                                break;
+                            }
+                            b[off + i] = (byte)c;
+                        }
+                    } catch (IOException ee) {
+                    }
+                    return i;
+                }
+      //表示要跳过的字节数目
+      public long skip(long n) throws IOException {
+      
+              long remaining = n;
+              int nr;
+      
+              if (n &lt;= 0) {
+                  return 0;
+              }
+      
+              int size = (int)Math.min(MAX_SKIP_BUFFER_SIZE, remaining);
+              byte[] skipBuffer = new byte[size];
+              while (remaining &gt; 0) {
+                  nr = read(skipBuffer, 0, (int)Math.min(size, remaining));
+                  if (nr &lt; 0) {
+                      break;
+                  }
+                  remaining -= nr;
+              }
+      
+              return n - remaining;
+          }
+       //查询流中还有多少可以读取的字节
+      public int available() throws IOException {
+              return 0;
+          }
+       //关闭当前流、同时释放与此流相关的资源
+      public void close() throws IOException {}
+       //在当前位置对流进行标记，必要的时候可以使用reset方法返回
+      public synchronized void mark(int readlimit) {}
+       //对mark过的流进行复位。只有当流支持mark时才可以使用此方法
+      public synchronized void reset() throws IOException {
+              throw new IOException(&quot;mark/reset not supported&quot;);
+          }
+       //markSupport可以查询当前流是否支持mark
+      public boolean markSupported() {
+               return false;
+           }
+                
+}
+</code></pre>
+<p>OutputStream的核心源码(基于JDK8,去除源码中的注释):</p>
+<pre><code class="language-java">public abstract class OutputStream implements Closeable, Flushable {
+     //将一个字节写入输出流,
+     public abstract void write(int b) throws IOException;
+     //将指定字节数组写入输出流
+      public void write(byte b[]) throws IOException {
+             write(b, 0, b.length);
+         }
+      //将指定字节数组截取部分长度写入输出流
+      public void write(byte b[], int off, int len) throws IOException {
+              if (b == null) {
+                  throw new NullPointerException();
+              } else if ((off &lt; 0) || (off &gt; b.length) || (len &lt; 0) ||
+                         ((off + len) &gt; b.length) || ((off + len) &lt; 0)) {
+                  throw new IndexOutOfBoundsException();
+              } else if (len == 0) {
+                  return;
+              }
+              for (int i = 0 ; i &lt; len ; i++) {
+                  write(b[off + i]);
+              }
+          }
+      //如果是带有缓冲区的输出流,则可以强制将缓冲区内的数组刷新到对应的输出流中
+      public void flush() throws IOException {}
+      //关闭输出流
+      public void close() throws IOException {}
+}
+</code></pre>
+<p>其实从InputStream和OutputStream的核心抽象API来看,其实就是定义了&quot;字节&quot;的基本读取API,即read和write方法,其子类无非是在此</p>
+<p>基础上进行了具体的实现,则下面看看都有哪些具体的实现,我们先来看InputStream</p>
+<p>| 类 |功能|如何构造/怎样使用|<br>
+| - | - |<br>
+| ByteArrayInputStream |	将内存中的Byte数组适配为一个InputStream。 |从内存中的Byte数组创建该对象（2种方法）一般作为数据源，会使用其它装饰流提供额外的功能，一般都建议加个缓冲功能。 |<br>
+| StringBufferInputStream | 将内存中的字符串适配为一个InputStream。 |从一个String对象创建该对象。底层的实现使用StringBuffer。该类被Deprecated。主要原因是StringBuffer不应该属于字节流，所以推荐使用StringReader。一般作为数据源，同样会使用其它装饰器提供额外的功能。 |<br>
+|FileInputStream | 最基本的文件输入流。主要用于从文件中读取信息。|通过一个代表文件路径的 String、File对象或者 FileDescriptor对象创建。一般作为数据源，同样会使用其它装饰器提供额外的功能。|<br>
+|PipedInputStream |读取从对应PipedOutputStream写入的数据。在流中实现了管道的概念。 |利用对应的PipedOutputStream创建。在多线程程序中作为数据源，同样会使用其它装饰器提供额外的功能。|<br>
+|SequenceInputStream | 将2个或者多个InputStream 对象转变为一个InputStream. |使用两个InputStream 或者内部对象为InputStream 的Enumeration对象创建该对象。一般作为数据源，同样会使用其它装饰器提供额外的功能。|<br>
+|DataInputStream | 一般和DataOutputStream配对使用,完成基本数据类型的读写。 |利用一个InputStream构造。提供了大量的读取基本数据类新的读取方法。|<br>
+|BufferedInputStream | 使用该对象阻止每次读取一个字节都会频繁操作IO。将字节读取一个缓存区，从缓存区读取。|利用一个InputStream、或者带上一个自定义的缓存区的大小构造。使用InputStream的方法读取，只是背后多一个缓存的功能。设计模式中透明装饰器的应用。|<br>
+|LineNumberInputStream |跟踪输入流中的行号。可以调用getLineNumber( )和 setLineNumber(int)方法得到和设置行号。 |利用一个InputStream构造紧紧增加一个行号。可以象使用其它InputStream一样使用。|<br>
+|PushbackInputStream | 可以在读取最后一个byte 后将其放回到缓存中。 |利用一个InputStream构造。一般仅仅会在设计compiler的scanner 时会用到这个类。在我们的java语言的编译器中使用它。很多程序员可能一辈子都不需要。|</p>
+<p>我们再看看OutputStream</p>
+<p>| 类 |功能|如何构造/怎样使用|<br>
+| - | - |<br>
+| ByteArrayOutputStream |	在内存中创建一个buffer。所有写入此流中的数据都被放入到此buffer中。 |无参或者使用一个可选的初始化buffer的大小的参数构造。一般将其和FilterOutputStream套接得到额外的功能。建议首先和BufferedOutputStream套接实现缓冲功能。通过toByteArray方法可以得到流中的数据。（不通明装饰器的用法） |<br>
+| FileOutputStream | 将信息写入文件中。 |使用代表文件路径的String、File对象或者 FileDescriptor对象创建。还可以加一个代表写入的方式是否为append的标记。一般将其和FilterOutputStream套接得到额外的功能。 |<br>
+|PipedOutputStream | 任何写入此对象的信息都被放入对应PipedInputStream 对象的缓存中，从而完成线程的通信，实现了“管道”的概念。具体在后面详细讲解。|利用PipedInputStream构造.在多线程程序中数据的目的地的。一般将其和FilterOutputStream套接得到额外的功能。|<br>
+|DataOutputStream |通常和DataInputStream配合使用，使用它可以写入基本数据类新。 |使用OutputStream构造.包含大量的写入基本数据类型的方法。|<br>
+|PrintStream | 产生具有格式的输出信息。（一般地在java程序中DataOutputStream用于数据的存储，即J2EE中持久层完成的功能，PrintStream完成显示的功能，类似于J2EE中表现层的功能）|使用OutputStream和一个可选的表示缓存是否在每次换行时是否flush的标记构造。还提供很多和文件相关的构造方法。一般是一个终极（“final”）的包装器，很多时候我们都使用它！|<br>
+|BufferedOutputStream |	使用它可以避免频繁地向IO写入数据，数据一般都写入一个缓存区，在调用flush方法后会清空缓存、一次完成数据的写入 |从一个OutputStream或者和一个代表缓存区大小的可选参数构造。提供和其它OutputStream一致的接口，只是内部提供一个缓存的功能。|</p>
+<h3 id="3-为什么会出现nio">3. 为什么会出现NIO?</h3>
+<h3 id="4-为什么又出现aio">4. 为什么又出现AIO?</h3>
+<h3 id="5-看优秀开源框架如何使用nioaio编程如nettytomcat">5. 看优秀开源框架如何使用NIO/AIO编程,如Netty,Tomcat</h3>
+<h3 id="6-使用原生的nioaio还是nettymina">6. 使用原生的NIO/AIO还是Netty,Mina?</h3>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.jianshu.com/p/c4d3ef8004a7">从设计者的角度理解Java IO流</a></li>
+<li><a href="https://www.cnblogs.com/Joanna-Yan/p/7419117.html">Java IO编程全解（一）——Java的I/O演进之路</a></li>
+<li><a href="https://blog.csdn.net/jijianshuai/article/details/77450746">IO、NIO、AIO 内部原理分析</a></li>
+<li><a href="https://blog.csdn.net/nbrremix/article/details/7352232">Java aio(异步网络IO)初探</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-lo-javaio/index.html">深入分析 Java I/O 的工作机制</a></li>
+<li><a href="https://blog.csdn.net/jianghuxiaojin/article/details/52073031">java-IO-基本概念</a></li>
+<li><a href="https://blog.csdn.net/baobeisimple/article/details/1713797">Java IO完全总结（转载）</a></li>
+<li><a href="https://blog.csdn.net/huangwenyi1010/article/details/75577091?ref=myread">Java之IO,BIO,NIO,AIO知多少？</a></li>
+<li><a href="https://blog.csdn.net/jay900323/article/details/18141217">Linux五种IO模型性能分析</a></li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[两个礼拜的杭州面试之旅总结]]></title>
+        <id>https://felayman.github.io/post/liang-ge-li-bai-de-hang-zhou-mian-shi-zhi-lu-zong-jie/</id>
+        <link href="https://felayman.github.io/post/liang-ge-li-bai-de-hang-zhou-mian-shi-zhi-lu-zong-jie/">
+        </link>
+        <updated>2018-03-27T12:38:25.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>来杭州两个礼拜的面试总结</p>
+</blockquote>
+<h2 id="前沿">前沿</h2>
+<p>首先,本人是15年毕业,算上实习,至今大概3年工作经验</p>
+<p>主要研究方向: Java/搜引推荐</p>
+<h2 id="面试公司">面试公司</h2>
+<p>注: 排名不分先后</p>
+<ul>
+<li>蚂蚁金服(中间件)</li>
+<li>阿里飞猪</li>
+<li>阿里橙鹰数据</li>
+<li>网易(七鱼)</li>
+<li>曹操专车(中间件)</li>
+<li>个推(B2D)</li>
+<li>卖好车</li>
+<li>格格家</li>
+<li>尚妆网</li>
+<li>顶象科技</li>
+</ul>
+<p>因为本身不是很喜欢金融行业,因此没有投杭州金融公司.</p>
+<p>其中<strong>有赞</strong>跟<strong>蘑菇街</strong>投了简历,但是至今没有面试机会(但是在Boss上还一直跟你要简历)</p>
+<h2 id="热点面试题">热点面试题</h2>
+<p>热点面试题是基本上每家公司都会问到的一些问题:</p>
+<p><strong>1. Dubbo</strong></p>
+<p>关于dubbo,不同公司问的深度不一样,有的公司可能只会问到dubbo一些基本原理,比如服务熔断,降级,服务治理等,也有公司会问一些底层的具体实现,比如RPC,序列化的底层实现(涉及到源码)</p>
+<p><strong>2. spring</strong></p>
+<p>Spring好像是一个永不过时的面试题,问题的问题深浅也不一,如果你之前一直在写web业务的话,可能需要能够知道一些SpringMVC的的知识和原理实现,比如视图映射流程,视图解析,DispatcherServlet的初始化流程等,如果你很久不怎么写Web业务(博主很久不怎么写Web业务),会问spring的一些模块的底层原理,像spring aop,以及spring的二次开发</p>
+<p><strong>3. SpringBoot</strong></p>
+<p>关于Springboot,近来也一直是面试的主流,问的问题根据不同的岗位也会有不同的深浅,比如一些公司可能问到springboot的好处以及使用过哪些组件,用过哪些注解,遇到哪些问题,也有一些公司会问的比较深,比如springboot starter的实现机制,如何对springboot做二次封装,你看过springboot哪些模块的源码</p>
+<p><strong>4. Springcloud</strong></p>
+<p>这个基本上,所有的面试都会问一些(当然是你简历上出现过),不过一般公司问的并不深,一般情况下,如果你真的使用过,起码你能说出来springcloud的一些常用组件,比如Eureka,ribbon,Feign,Hystrix,zuul等,以及能说出这些组件是解决哪些问题的,很少有公司会针对springcloud有原理上的要求(当然,面试一些更高级的岗位可能会有要求,比如架构师),因此一般的面试官会试探性的问下,你看过springcloud的哪些源码,如果你没看过,如实回答即可</p>
+<p><strong>5. Redis</strong></p>
+<p>redis是基本上每个面试官都会被问到的,redis的相关问题,真的能看出候选者所做的工作内容的业务深度, 有些公司可能对redis的使用仅仅限于缓存中间件,那么问的问题也深浅不一,简单的可能会问一些基本的redis命令,以及redis的数据类型,深一些的会问道redis的备份方式,淘汰策略,也有一些面试官会追问到包括redis每种数据结构的底层实现(c实现的结构体数据结构),如何自己实现redis LRU算法,哪些手段能有效防止内存穿透等问题,更有一些面试官会临时出一些redis与分布式相关的场景,比如分布式锁,秒杀场景,用redis实现限流,熔断等</p>
+<p><strong>6. Mysql</strong></p>
+<p>面试必问的话题,关于mysql是大多数互联网公司的核心数据存储的数据库类型,不管怎么样,mysql了解的越深入越好,像基本的索引类型,索引的底层数据结构,A/B/C联合索引,聚簇索引,事务隔离,乐观锁悲观锁,当然能够了解存储引擎(innodb)的工作流程,索引优化,触发器等都是很好的加分项</p>
+<h3 id="面试题">面试题</h3>
+<p>尽可能的将我在面试过程中遇到的问题进行一个汇总(无关先后顺序)</p>
+<ul>
+<li>快速排序</li>
+<li>堆排序</li>
+<li>遍历二叉树</li>
+<li>红黑树</li>
+<li>跳跃表</li>
+<li>FST(有限状态机)</li>
+<li>spring的理解</li>
+<li>spring的bean生命周期</li>
+<li>spring aop</li>
+<li>cglib与动态代理</li>
+<li>springboot组件</li>
+<li>springboot starter</li>
+<li>springclloud的常用组件</li>
+<li>springcloud和dubbo的优缺点</li>
+<li>springmvc的视图解析流程</li>
+<li>dubbo有哪些组件</li>
+<li>dubbo的RPC实现原理</li>
+<li>dubbo如何实现restful</li>
+<li>dubbo中的限流和熔断如何做</li>
+<li>dubbo的服务治理</li>
+<li>dubbo的序列化原理</li>
+<li>dubbo关于tcp协议的封装原理</li>
+<li>netty有使用过吗</li>
+<li>java nio有了解吗</li>
+<li>TCP协议的握手规则</li>
+<li>dubbo调用过程,如何实现负载均衡</li>
+<li>RocketMQ如何保证顺序</li>
+<li>RocketMQ的事务如何保证</li>
+<li>RocketMQ的消息定位原理</li>
+<li>RocketMQ与Kafka的区别和使用场景</li>
+<li>了解那些限流,熔断组件</li>
+<li>聚簇索引和联合索引</li>
+<li>Redis的LRU算法实现</li>
+<li>hashMap和hashTable的区别</li>
+<li>hashMap和hashTable的区别除了在线程安全问题外还有什么问题</li>
+<li>G1的内存模型</li>
+<li>CMS和G1的目标和区别</li>
+<li>A/B/C的联合索引问题</li>
+<li>聚簇索引和联合索引</li>
+<li>Hbase和Elasticsearch的区别</li>
+<li>有哪些JVM线上故障</li>
+<li>Elasticsearch的体系架构图</li>
+<li>Lucene的核心组件有哪些</li>
+<li>工作中使用了哪些设计模式</li>
+<li>策略模式详细介绍</li>
+<li>策略模式符合哪些设计原则</li>
+<li>策略模式和组合模式的区别</li>
+<li>Redis各种数据结构的底层实现原理</li>
+<li>如何自己实现Redis的LRU算法</li>
+<li>类加载机制,自定义类加载器需要实现哪些方法</li>
+<li>AQS的实现原理</li>
+<li>Unsafe的底层实现</li>
+<li>currentHashMap的实现原理</li>
+<li>各种锁,如自旋锁,读写锁等</li>
+<li>AQS的底层实现,数据结构和原理</li>
+<li>volitile的作用</li>
+<li>volitile如何保存内存可见性</li>
+<li>volitile保住内存可见性的原理</li>
+<li>synchronized的原理</li>
+<li>synchronized可重入吗</li>
+<li>synchronized是公平锁吗</li>
+<li>synchronized和Lock的优缺点</li>
+<li>使用过线程池吗</li>
+<li>线程池有哪些类型</li>
+<li>如何自定义自己的线程池</li>
+<li>线程池的几个参数</li>
+<li>了解JDK8吗</li>
+<li>使用过Fork/Join框架吗</li>
+<li>Java8的并发流的底层实现</li>
+<li>Java8 并发流真的快吗</li>
+<li>用过哪些JUC组件</li>
+<li>对JVM了解吗</li>
+<li>JVM的内存区域分配</li>
+<li>讲一下加载一个类的流程</li>
+<li>类加载机制</li>
+<li>如何自定义一个类加载器,要实现哪些方法</li>
+<li>做过哪些JVM参数调优</li>
+<li>最近在关注哪些技术</li>
+<li>Java如何管理堆外内存</li>
+<li>Java8的内存变化有哪些</li>
+<li>G1了解吗</li>
+<li>引起FGC的原因有哪些</li>
+<li>FGC在什么场景下会引起YGC</li>
+<li>用过哪些JDK 工具</li>
+<li>实现分布式锁有哪些手段</li>
+<li>了解哪些分布式事务框架</li>
+<li>了解CAP和BASE吗</li>
+<li>zookeeper的选举机制</li>
+<li>Elasticsearch的选举机制</li>
+<li>如何避免zookeeper的脑裂</li>
+<li>Elasticsearch的flush和refresh</li>
+<li>Elasticsearch的负载均衡实现</li>
+<li>用过哪些Elasticsearch插件</li>
+<li>了解NLP吗</li>
+<li>有过NLP落地经验吗</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>不管面试大公司还是小公司,建议在下面几个技术栈上多下功夫,越深越好</p>
+<p><strong>必选(需要深入了解)</strong></p>
+<ul>
+<li>spring</li>
+<li>Java集合</li>
+<li>dubbo</li>
+<li>mysql</li>
+<li>redis</li>
+<li>JVM</li>
+<li>分布式理论基础</li>
+</ul>
+<p><strong>必选(一般了解即可)</strong></p>
+<ul>
+<li>springcloud</li>
+<li>springboot</li>
+<li>elasticsearch</li>
+<li>nlp</li>
+<li>JMM</li>
+<li>多线程,JUC</li>
+<li>操作系统</li>
+</ul>
+<p><strong>加分项</strong></p>
+<ul>
+<li>hbase,hive,storm等大数据套件</li>
+<li>elk</li>
+<li>java nio</li>
+<li>netty</li>
+<li>socket编程</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[曹操专车面试题]]></title>
+        <id>https://felayman.github.io/post/cao-cao-zhuan-che-mian-shi-ti/</id>
+        <link href="https://felayman.github.io/post/cao-cao-zhuan-che-mian-shi-ti/">
+        </link>
+        <updated>2018-03-26T12:37:54.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>曹操专车面试题</p>
+</blockquote>
+<h2 id="一面">一面</h2>
+<ol>
+<li>dubbo调用过程,如何实现负载均衡</li>
+<li>RocketMQ如何保证顺序</li>
+<li>了解那些限流,熔断组件</li>
+<li>如何快速定位线上故障</li>
+<li>聚簇索引和联合索引</li>
+<li>dubbo关于tcp协议的封住原理</li>
+<li>RocketMQ的事务如何保证</li>
+<li>Redis的LRU算法实现</li>
+<li>concurrenthashmap在JDK7和8的变化</li>
+<li>hashMap和hashTable的区别</li>
+<li>hashMap和hashTable的区别除了在线程安全问题外还有什么问题</li>
+<li>G1的内存模型</li>
+<li>CMS和G1的目标和区别</li>
+<li>A/B/C的联合索引问题</li>
+<li>Hbase和Elasticsearch的区别</li>
+<li>TCP协议的握手规则</li>
+<li>有哪些JVM线上故障</li>
+</ol>
+<h2 id="二面中间件部门">二面(中间件部门)</h2>
+<ol>
+<li>快速排序以及空间复杂度</li>
+<li>堆排序以及使用场景</li>
+<li>Elasticsearch的体系架构图(要求画出)</li>
+<li>Lucene的核心组件有哪些</li>
+<li>文档写入到分片上的整个流程</li>
+<li>工作中使用了哪些设计模式</li>
+<li>策略模式详细介绍</li>
+<li>策略模式符合哪些设计原则</li>
+<li>策略模式和组合模式的区别</li>
+<li>Redis各种数据结构的底层实现原理</li>
+<li>如何自己实现Redis的LRU算法</li>
+<li>dubbo如何自己实现restful</li>
+<li>Dubbo的核心组件</li>
+<li>RocketMQ的消息定位原理</li>
+<li>类加载机制,自定义类加载器需要实现哪些方法</li>
+<li>AQS的实现原理</li>
+<li>Unsafe的底层实现</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[JVM参数使用建议]]></title>
+        <id>https://felayman.github.io/post/jvm-can-shu-shi-yong-jian-yi/</id>
+        <link href="https://felayman.github.io/post/jvm-can-shu-shi-yong-jian-yi/">
+        </link>
+        <updated>2018-03-16T12:37:14.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>一个叫XXFox的JVM参数分析产品正式上线了,它不但能对系统的JVM参数进行合理性检查修改，提出专业的建议，还能基于环境生成JVM参数。大家可以通过访问http://xxfox.perfma.com 来检查下自己系统的JVM参数</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>首先感谢JVM大神—笨神【<a href="http://lovestblog.cn/">你假笨</a> 】为我们带来的工具<a href="">JVMPocket</a> (微信小程序) ,为每一个对JVM感兴趣的同学都<br>
+能够了解JVM相关的参数,同时也感谢【<a href="http://lovestblog.cn/">你假笨</a> 】分享的那么多精华的JVM实战文章,帮助更多对JVM故障的<br>
+分析不足的人对JVM的更进一步的认识.</p>
+<p>今天跟大家分享一个【<a href="http://lovestblog.cn/">你假笨</a> 】的一款工具— xxfox</p>
+<p>xxfox是一个在线网站,可以帮我们了解和分析每个Java应用程序的JVM参数的含义以及建议.</p>
+<p>首先打开http://xxfox.perfma.com/,出现如下的界面:</p>
+<figure data-type="image" tabindex="1"><img src="http://felayman.oss-cn-beijing.aliyuncs.com/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87/xxfox.png" alt="" loading="lazy"></figure>
+<p>我们输入我们的Java应用程序的VM参数,这里我以我们线上的Elasticsearch的VM参数为例:</p>
+<pre><code class="language-java">-XX:CICompilerCount=4
+-XX:CMSInitiatingOccupancyFraction=75
+-XX:+DisableExplicitGC
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:InitialHeapSize=4294967296
+-XX:MaxHeapSize=17179869184
+-XX:MaxNewSize=697892864
+-XX:MaxTenuringThreshold=6
+-XX:MinHeapDeltaBytes=196608
+-XX:NewSize=697892864
+-XX:OldPLABSize=16
+-XX:OldSize=3597074432
+-XX:+UseCMSInitiatingOccupancyOnly
+-XX:+UseCompressedClassPointers
+-XX:+UseCompressedOops
+-XX:+UseConcMarkSweepGC
+-XX:+UseParNewGC
+</code></pre>
+<p>输入到上图的分析框中,点击右边参数查询,则可以看到对应的每个VM参数的含义,以及笨神给出的建议和使用场景,如下图</p>
+<figure data-type="image" tabindex="2"><img src="http://felayman.oss-cn-beijing.aliyuncs.com/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87/xxfox-1.png" alt="" loading="lazy"></figure>
+<p>上图只是部分截图,详细的内容可以参考: <a href="http://xxfox.perfma.com/jvm/query?t=d70b4c88-8dfb-4a7c-91cf-def43568c4d7">http://xxfox.perfma.com/jvm/query</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[2017年度收藏好文]]></title>
+        <id>https://felayman.github.io/post/2017-nian-du-shou-cang-hao-wen/</id>
+        <link href="https://felayman.github.io/post/2017-nian-du-shou-cang-hao-wen/">
+        </link>
+        <updated>2017-12-30T12:36:38.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>本文收藏2017年看过的的比较好的文章</p>
+</blockquote>
+<h2 id="优秀技术团队博客">优秀技术团队博客</h2>
+<ul>
+<li><a href="http://jm.taobao.org/about/">阿里中间件团队博客</a></li>
+<li><a href="https://tech.meituan.com/">美团点评技术团队</a></li>
+<li><a href="https://tech.youzan.com/">有赞技术团队</a></li>
+<li><a href="http://tech.lede.com/">网易乐得技术团队</a></li>
+</ul>
+<h2 id="精华文章">精华文章</h2>
+<ul>
+<li><a href="my.oschina.net/u/1462914/blog/1563127">写会 MySQL 索引</a></li>
+<li><a href="http://cmsblogs.com/?p=2092">【死磕Java并发】—–深入分析volatile的实现原理</a></li>
+<li><a href="http://openskill.cn/article/229">Elasticsearch结合Nginx使用</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&amp;mid=209488723&amp;idx=1&amp;sn=d60c0637d7a9f4a4b981a69f10c6b90a">亿级规模的Elasticsearch优化实战</a></li>
+<li><a href="http://insights.thoughtworkers.org/security-issues-in-restful/">RESTful架构风格下的4大常见安全问题</a></li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/tengdazhang770960436/article/details/49963983">各大技术团队博客</a></li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[性能监控的一些方法]]></title>
+        <id>https://felayman.github.io/post/xing-neng-jian-kong-de-yi-xie-fang-fa/</id>
+        <link href="https://felayman.github.io/post/xing-neng-jian-kong-de-yi-xie-fang-fa/">
+        </link>
+        <updated>2017-08-02T12:36:01.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>性能监控是开发所无法避免的情况,我们只要深切的理解性能监控的各种指标,才能开发出更加高效的程序</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>一般来说,性能监控是运维人员需要密切关注了,但是作为一个开发人员,对性能的了解应该也是必不可少的,看过不少文章, 都没有站在一个开发者角度上<br>
+来讲述,开发一个高性能的应用程序,需要关注和了解哪些性能指标(这里是作为一名Java开发者的角度来考虑)</p>
+<p>一般来说,下面的指标是很好的判断依据</p>
+<ul>
+<li>PV</li>
+<li>QPS/TPS</li>
+<li>TPS</li>
+<li>RT</li>
+<li>Load</li>
+<li>CPU</li>
+<li>GC</li>
+<li>Heap</li>
+<li>IO</li>
+</ul>
+<h2 id="术语">术语</h2>
+<p><strong>PV</strong></p>
+<p>统计PV可以有多种方式</p>
+<ol>
+<li>前端统计,比如使用google、百度统计等</li>
+<li>后端埋点,每次后段请求都计算是一次pv</li>
+<li>通过统计nginx日志,可以使用spark离线统计</li>
+</ol>
+<p><strong>QPS</strong></p>
+<p>关于QPS,知乎某神给出了比较理想的计算方式,这里分享一下:</p>
+<p>QPS = req/sec = 请求数/秒</p>
+<p>【QPS计算PV和机器的方式】</p>
+<p>QPS统计方式 [一般使用 http_load 进行统计]</p>
+<p>QPS = 总请求数 / ( 进程总数 *   请求时间 )</p>
+<p>QPS: 单个进程每秒请求服务器的成功次数</p>
+<p>单台服务器每天PV计算</p>
+<p>公式1：每天总PV = QPS * 3600 * 6</p>
+<p>公式2：每天总PV = QPS * 3600 * 8</p>
+<p>服务器计算</p>
+<p>服务器数量 =   ceil( 每天总PV / 单台服务器每天总PV )</p>
+<p>【峰值QPS和机器计算公式】</p>
+<p>原理：每天80%的访问集中在20%的时间里，这20%时间叫做峰值时间</p>
+<p>公式：( 总PV数 * 80% ) / ( 每天秒数 * 20% ) = 峰值时间每秒请求数(QPS)</p>
+<p>机器：峰值时间每秒QPS / 单台机器的QPS   = 需要的机器</p>
+<p>问：每天300w PV 的在单台机器上，这台机器需要多少QPS？</p>
+<p>答：( 3000000 * 0.8 ) / (86400 * 0.2 ) = 139 (QPS)</p>
+<p>问：如果一台机器的QPS是58，需要几台机器来支持？</p>
+<p>答：139 / 58 = 3</p>
+<p><strong>RT</strong></p>
+<p>Response Time,响应时间，指客户端从发出一个请求开始计时，到客户端收到服务器端返回的响应结果结束所经历的时间</p>
+<p>响应时间由三部分组成：请求发送时间、网络传输时间、服务器处理时间</p>
+<p><strong>Load</strong></p>
+<p>LOAD负载,系统平均负载，定义为在特定时间间隔内运行队列中的平均进程数</p>
+<p>这个负载值比较理想的指标值是cpu总核数*0.7，如果长期超过这个指标值就需要警惕了。</p>
+<p><strong>CPU</strong></p>
+<p>cpu资源指的是应用服务器cpu资源占用率</p>
+<p>也指用户进程与系统进程消耗的CPU时间百分比，长时间情况下，一般可接受上限不超过85%(通常建议)</p>
+<p>cpu资源是判断系统处理能力以及应用是否稳定的重要参数</p>
+<p><strong>GC</strong></p>
+<p>java应用的性能指标必然不会少了GC,通常会避免使用FullGC，因为其会进行完全的垃圾清理，造成应用运行很慢，所以需要通过设置合适的jvm参数和GC策略来避免FGC</p>
+<p>通常的监控指标为GC次数和响应时间</p>
+<p><strong>Heap</strong></p>
+<p>内存利用率,内存利用率=（1-空闲内存/总内存大小）*100%，一般至少有10%可用内存，内存使用率可接受上限为85%(通常建议)</p>
+<p><strong>IO</strong></p>
+<p>磁盘主要用于存取数据，因此当说到IO操作的时候，就会存在两种相对应的操作，存数据的时候对应的是写IO操作，取数据的时候对应的是是读IO操作，一般使用% Disk Time（磁盘用于读写操作所占用的时间百分比）度量磁盘读写性能</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.zhihu.com/question/21556347">PV、TPS、QPS是怎么计算出来的</a></li>
+</ul>
+]]></content>
     </entry>
 </feed>

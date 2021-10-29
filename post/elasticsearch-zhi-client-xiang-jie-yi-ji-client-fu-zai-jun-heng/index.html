@@ -1,0 +1,400 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elasticsearch之Client详解以及Client负载均衡 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Elasticsearch之Client详解以及Client负载均衡 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+ElasticSearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是当前流行..." />
+    <meta name="keywords" content="Elasticsearch" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Elasticsearch之Client详解以及Client负载均衡
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-04-20
+              </span>
+              <span>
+                11 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Elasticsearch/" class="post-tag">
+                  # Elasticsearch
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>ElasticSearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是当前流行的企业级搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>ElasticSearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是当前流行的企业级搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。</p>
+<h2 id="client架构设计">Client架构设计</h2>
+<p>整个Elasticsearch-Client的基础架构图如下:</p>
+<figure data-type="image" tabindex="1"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/Elasticsearch/elasticsearchclient.png" alt="" loading="lazy"></figure>
+<p>在上图中我们可以看到,Client的核心设计目的是作为请求转发(也实现了客户端请求的负载均衡),当然Client本身也会处理一部分请求(比如NodeClient),后面会详细说明</p>
+<p>整个Elasticsearch-Client的类图层级结构如下:</p>
+<figure data-type="image" tabindex="2"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/Elasticsearch/ElasticsearchClient.png" alt="" loading="lazy"></figure>
+<h2 id="client层级解剖">Client层级解剖</h2>
+<p><strong>1. 顶级抽象接口</strong></p>
+<ul>
+<li>ElasticsearchClient</li>
+<li>AbstractComponent</li>
+<li>AdminClient</li>
+</ul>
+<p>这三个接口构建了整个Elasticsearch的顶层Client的定义,ElasticsearchClient定义了基本的request-response模式的接口方法,以及整个请求-响应执行的线程池,ElasticsearchClient的核心接口如下:</p>
+<pre><code class="language-java">public interface ElasticsearchClient {
+  &lt;Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder&lt;Request, Response, RequestBuilder&gt;&gt; ActionFuture&lt;Response&gt; execute(
+            Action&lt;Request, Response, RequestBuilder&gt; action, Request request);
+  &lt;Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder&lt;Request, Response, RequestBuilder&gt;&gt; void execute(
+              Action&lt;Request, Response, RequestBuilder&gt; action, Request request, ActionListener&lt;Response&gt; listener);
+  &lt;Request extends ActionRequest, Response extends ActionResponse, RequestBuilder extends ActionRequestBuilder&lt;Request, Response, RequestBuilder&gt;&gt; RequestBuilder prepareExecute(
+     Action&lt;Request, Response, RequestBuilder&gt; action);
+  ThreadPool threadPool();
+}
+</code></pre>
+<p>而AbstractComponent则是Elasticsearch一个抽象组件,其核心功能有三个:</p>
+<ul>
+<li>持有Settings,提供给具体实现类使用</li>
+<li>全局Logger的管理,用于全局记录组件日志</li>
+<li>记录不再建议使用的使用事项</li>
+</ul>
+<p>其核心源码如下:</p>
+<pre><code class="language-java">public abstract class AbstractComponent {
+    protected final Logger logger;
+    protected final DeprecationLogger deprecationLogger;
+    protected final Settings settings;
+}
+</code></pre>
+<p>AdminClient是Elasticsearch设计上的一个业务划分,将对Elasticsearch的管理分为两个部分:</p>
+<ol>
+<li>对集群的管理</li>
+<li>对索引的管理</li>
+</ol>
+<p>两者的区别在于请求的目的,前者的请求目的是与集群相关的操作,后者是目的是与索引相关的操作,具体的区别详情在后面会涉及到.</p>
+<p>其核心源码如下:</p>
+<pre><code class="language-java">public interface AdminClient {
+   ClusterAdminClient cluster();
+   IndicesAdminClient indices();
+}
+</code></pre>
+<p>这样设计的好处在于,可以很好的设计出针对不同用户群体的API,比如应用类程序可能会更关注与对索引的API开发,而监控类程序可能会更关注与对集群的API开发.</p>
+<p><strong>3. 顶级抽象接口扩展</strong></p>
+<ul>
+<li>Client</li>
+<li>AbstractClient</li>
+</ul>
+<p>Client与AbstractClient是上述三个顶级抽象接口的扩展,一般来说,顶级接口越抽象,功能便会越独立,这种设计也是符合设计原则中的——单一职责原则和接口隔离原则</p>
+<p>ElasticsearchClient、AbstractComponent、AdminClient从设计原则的角度上来说,只是一个独立设计的顶层抽象接口,如何将这些抽象进行集成,提供完备的客户端服务,则是Client和AbstractClient来考虑的事情.</p>
+<p>Client的职责是将AdminClient和ElasticsearchClient的功能进行组合抽象,目的是抽象出一个既能支持请求-响应模式的调度方式,也能将请求进行归类处理的接口.</p>
+<p>因为ElasticsearchClient所能提供的核心服务,只是定义了请求-响应的调度模式,但是具体谁来完成该调度模式则是需要AdminClient来完成,因此,Client提供了这种功能,在此基础之上,Client还抽象出一些经常使用的API,如get、index、update、delete、bulk、search等使用频率非常之高的抽象API.</p>
+<p>Client的部分源码如下:</p>
+<pre><code class="language-java">public interface Client extends ElasticsearchClient, Releasable {
+  AdminClient admin();
+  ActionFuture&lt;IndexResponse&gt; index(IndexRequest request);
+  ActionFuture&lt;UpdateResponse&gt; update(UpdateRequest request);
+  ActionFuture&lt;DeleteResponse&gt; delete(DeleteRequest request);
+  ActionFuture&lt;BulkResponse&gt; bulk(BulkRequest request);
+  ActionFuture&lt;GetResponse&gt; get(GetRequest request);
+  ActionFuture&lt;SearchResponse&gt; search(SearchRequest request);
+  ......
+}
+</code></pre>
+<p>这里我们了解到,Client设计的核心作用有三个:</p>
+<ol>
+<li>提供获取AdminClient的方式</li>
+<li>定义请求的处理模型</li>
+<li>封装常用的请求操作API</li>
+</ol>
+<p>注意:</p>
+<blockquote>
+<p>Client并不提供真正的请求处理能力,只是定义了处理请求的框架和一些常用API.</p>
+</blockquote>
+<p>我们看看AbstractClient做了哪些工作?</p>
+<p>首先我们知道Client定义了一些常用的API,这些API归根结底仍然是请求-响应模式的具体实现,所以AbstractClient会将Client封装常用的API转换成请求-响应的处理模式.</p>
+<p>其次我们了解Client提供了获取AdminClient的方式,那么我们想使用具体的AdminClient该怎么办呢? 此时AbstractClient内部持有一个Admin,而Admin是AdminClient的具体实现类,且Admin内部也是同时持有ClusterAdminClient和IndicesAdminClient两个接口的具体实现,因此AbstractClient已经基本能开始工作了,因为内部该有的实现类都已经有了.</p>
+<p>我们先来看下AdminClient的部分源码:</p>
+<pre><code class="language-java">static class Admin implements AdminClient {
+    private final ClusterAdmin clusterAdmin;
+    private final IndicesAdmin indicesAdmin;
+}
+</code></pre>
+<p>ClusterAdmin部分源码:</p>
+<pre><code class="language-java">static class ClusterAdmin implements ClusterAdminClient {
+  private final ElasticsearchClient client;
+  ClusterAdmin(ElasticsearchClient client) {
+            this.client = client;
+        }
+}
+</code></pre>
+<p>IndicesAdmin部分源码:</p>
+<pre><code class="language-java">static class IndicesAdmin implements IndicesAdminClient {
+   private final ElasticsearchClient client;
+   IndicesAdmin(ElasticsearchClient client) {
+            this.client = client;
+        }
+
+</code></pre>
+<p>看到上面的代码,有没有觉得很熟悉呢? 没错 ClusterAdmin、IndicesAdmin的设计跟Java IO的设计一样,其内部都是持有一个ElasticsearchClient,自身只是对ElasticsearchClient进行了装饰,典型的装饰模式,这里装饰的目的是想给ElasticsearchClient提供了额外的功能,因为ElasticsearchClient本身并不具备IndicesAdminClient或者ClusterAdminClient的能力,但是分别让ClusterAdminClient和IndicesAdminClient对ElasticsearchClient进行装饰,则ElasticsearchClient对外而言,也就有了IndicesAdminClient和ClusterAdminClient所提供的功能了</p>
+<p>关于装饰模式,请参考:<a href="http://www.runoob.com/design-pattern/decorator-pattern.html">装饰模式</a></p>
+<p>那么说了半天,AbstractComponent作为一个顶层抽象,还没讲到它有什么作用,其实AbstractComponent在Elasticsearch的核心,是许多组件的鼻祖,但是它所提供的抽象服务仅仅是在整个庞大Elasticsearch架构中都必不可少的,其核心作用在上面已经介绍了,这里我着重说下它的一个属性Settings</p>
+<p>Settings会保存一系列的配置信息,用于影响请求被调用执行的过程.</p>
+<p>至此,整个Client的基础架构已经完备,接下来就是如何构建不同环境所需要的AbstractClient示例了,根据Client的用途不同,Elasticsearch设计出三种不同的Client实现:</p>
+<ul>
+<li>FilterClient  装饰Client,用于动态扩展原始Client的功能</li>
+<li>NodeClient   本地Client,所有请求会在本地节点执行(当然当前节点属于集群的一个节点)</li>
+<li>TransportClient  传输客户端,该Client不能处理请求,只能将请求转发到其他节点</li>
+</ul>
+<p>其中PreBuiltTransportClient是TransportClient的具体实现,使用netty作为传输协议来进行请求转发,ParentTaskAssigningClient是FilterClient的具体实现,用于处理关联任务的Client</p>
+<h2 id="client负载均衡">Client负载均衡</h2>
+<p>Client的负载均衡是通过TransportClientNodesService类实现的。TransportClientNodesService实例维护一组DiscoveryNode引用，每次客户端请求的时候，会根据负载均衡算法选中一个节点（DiscoveryNode），发送请求。常用的负载算法有Random，Round robin，Hash，StaticWeighted等。ES的客户端负载使用了Round robin算法。</p>
+<p>Round robin(轮询调度)算法的思想是:</p>
+<p>了解更多Round robin(轮询调度),请参考:<a href="https://blog.csdn.net/pzw_0612/article/details/47357221">Round Robin 概念理解</a></p>
+<p>算法核心如下:</p>
+<pre><code class="language-java">public &lt;Response&gt; void execute(NodeListenerCallback&lt;Response&gt; callback, ActionListener&lt;Response&gt; listener) {
+        // we first read nodes before checking the closed state; this
+        // is because otherwise we could be subject to a race where we
+        // read the state as not being closed, and then the client is
+        // closed and the nodes list is cleared, and then a
+        // NoNodeAvailableException is thrown
+        // it is important that the order of first setting the state of
+        // closed and then clearing the list of nodes is maintained in
+        // the close method
+        final List&lt;DiscoveryNode&gt; nodes = this.nodes;
+        if (closed) {
+            throw new IllegalStateException(&quot;transport client is closed&quot;);
+        }
+        ensureNodesAreAvailable(nodes);
+        int index = getNodeNumber();
+        RetryListener&lt;Response&gt; retryListener = new RetryListener&lt;&gt;(callback, listener, nodes, index, hostFailureListener);
+        DiscoveryNode node = retryListener.getNode(0);
+        try {
+            callback.doWithNode(node, retryListener);
+        } catch (Exception e) {
+            try {
+                //this exception can't come from the TransportService as it doesn't throw exception at all
+                listener.onFailure(e);
+            } finally {
+                retryListener.maybeNodeFailed(node, e);
+            }
+        }
+    }
+</code></pre>
+<p>其中retryListener.getNode(0)是Round robin算法的具体实现:</p>
+<pre><code class="language-java"> return nodes.get((index + i) % nodes.size());
+</code></pre>
+<h2 id="restclient实现负载均衡">RestClient实现负载均衡</h2>
+<p>我们都知道RestClient的构建方式如下:</p>
+<pre><code class="language-java">RestClient = restClient = RestClient.builder(
+           new HttpHost(&quot;192.168.0.1&quot;,9200),
+           new HttpHost(&quot;192.168.0.2&quot;,9200),
+           new HttpHost(&quot;192.168.0.3&quot;,9200)
+       ).build();
+</code></pre>
+<p>RestClient通过HttpHost来保存每个节点的连接信息,而每个节点信息都会保存在一个HttpHost[] hosts中,然后通过轮询的方式,保证每次请求获取到的都是数组中的下一个地址信息</p>
+<p>部分源码如下:</p>
+<pre><code class="language-java">
+private HostTuple&lt;Iterator&lt;HttpHost&gt;&gt; nextHost() {
+        final HostTuple&lt;Set&lt;HttpHost&gt;&gt; hostTuple = this.hostTuple;
+        Collection&lt;HttpHost&gt; nextHosts = Collections.emptySet();
+        do {
+            Set&lt;HttpHost&gt; filteredHosts = new HashSet&lt;&gt;(hostTuple.hosts);
+            for (Map.Entry&lt;HttpHost, DeadHostState&gt; entry : blacklist.entrySet()) {
+                if (System.nanoTime() - entry.getValue().getDeadUntilNanos() &lt; 0) {
+                    filteredHosts.remove(entry.getKey());
+                }
+            }
+            if (filteredHosts.isEmpty()) {
+                //last resort: if there are no good host to use, return a single dead one, the one that's closest to being retried
+                List&lt;Map.Entry&lt;HttpHost, DeadHostState&gt;&gt; sortedHosts = new ArrayList&lt;&gt;(blacklist.entrySet());
+                if (sortedHosts.size() &gt; 0) {
+                    Collections.sort(sortedHosts, new Comparator&lt;Map.Entry&lt;HttpHost, DeadHostState&gt;&gt;() {
+                        @Override
+                        public int compare(Map.Entry&lt;HttpHost, DeadHostState&gt; o1, Map.Entry&lt;HttpHost, DeadHostState&gt; o2) {
+                            return Long.compare(o1.getValue().getDeadUntilNanos(), o2.getValue().getDeadUntilNanos());
+                        }
+                    });
+                    HttpHost deadHost = sortedHosts.get(0).getKey();
+                    logger.trace(&quot;resurrecting host [&quot; + deadHost + &quot;]&quot;);
+                    nextHosts = Collections.singleton(deadHost);
+                }
+            } else {
+                List&lt;HttpHost&gt; rotatedHosts = new ArrayList&lt;&gt;(filteredHosts);
+                Collections.rotate(rotatedHosts, rotatedHosts.size() - lastHostIndex.getAndIncrement());
+                nextHosts = rotatedHosts;
+            }
+        } while(nextHosts.isEmpty());
+        return new HostTuple&lt;&gt;(nextHosts.iterator(), hostTuple.authCache);
+    }
+</code></pre>
+<p>核心代码就一行:</p>
+<pre><code class="language-java">  Collections.rotate(rotatedHosts, rotatedHosts.size() - lastHostIndex.getAndIncrement());
+</code></pre>
+<p>看的出来,这里RestClient采取更好的自旋方式,来保证每次请求都会调用下一个节点.</p>
+<p>关于Collections.rotate,可以参考:<a href="https://blog.csdn.net/u014532901/article/details/52891183#rotate%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8"> Collections类中常用算法之Rotate</a></p>
+<h2 id="总结">总结</h2>
+<p>Elasticsearch的Client的构建体系设计的非常巧妙,主要体现在如下几点:</p>
+<ul>
+<li>多种不同的Client支持,如支持本地的NodeClient,支持Netty的TransportClient,也支持异步nio的RestClient</li>
+<li>职责划分清晰,负责集管理的ClusterAdminClient,负责索引管理的IndicesAdminClient</li>
+<li>Client负载均衡算法简单高效</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#client%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">Client架构设计</a></li>
+<li><a href="#client%E5%B1%82%E7%BA%A7%E8%A7%A3%E5%89%96">Client层级解剖</a></li>
+<li><a href="#client%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1">Client负载均衡</a></li>
+<li><a href="#restclient%E5%AE%9E%E7%8E%B0%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1">RestClient实现负载均衡</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/java-io/">
+              <h3 class="post-title">
+                Java IO
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

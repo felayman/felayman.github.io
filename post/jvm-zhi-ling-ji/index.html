@@ -1,0 +1,1274 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>jvm指令集 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="jvm指令集 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+摘于Java Virtual Machine Online Instruction Reference
+
+注: 不分版本
+jvm指令集
+指令集分类
+
+
+加载和存储指令
+如iload、istore等
+
+
+算术指令
+如iadd、isub、im..." />
+    <meta name="keywords" content="JVM" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              jvm指令集
+            </h2>
+            <div class="post-info">
+              <span>
+                2017-03-16
+              </span>
+              <span>
+                15 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/JVM/" class="post-tag">
+                  # JVM
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>摘于<a href="http://cs.au.dk/~mis/dOvs/jvmspec/ref-Java.html">Java Virtual Machine Online Instruction Reference</a></p>
+</blockquote>
+<p>注: 不分版本</p>
+<h2 id="jvm指令集">jvm指令集</h2>
+<h3 id="指令集分类">指令集分类</h3>
+<ul>
+<li>
+<p>加载和存储指令</p>
+<p>如iload、istore等</p>
+</li>
+<li>
+<p>算术指令</p>
+<p>如iadd、isub、imul、idiv</p>
+</li>
+<li>
+<p>类型转换指令</p>
+<p>如i2l、i2f、i2d、l2f、l2d、f2d</p>
+</li>
+<li>
+<p>对象创建和操作</p>
+<p>如new、newarray、newarray、multianewarray</p>
+</li>
+<li>
+<p>操作数堆栈管理指令</p>
+<p>如pop、pop2、dup、dup2</p>
+</li>
+<li>
+<p>控制转移指令</p>
+<p>如ifne、ifle、ifgt、ifge</p>
+</li>
+<li>
+<p>方法调用和返回指令</p>
+<p>如invokevirtual、invokeinterface、invokespecial、invokestaticstatic</p>
+</li>
+<li>
+<p>抛出异常</p>
+<p>如athrow</p>
+</li>
+<li>
+<p>同步</p>
+<p>如monitorenter、monitorexit</p>
+</li>
+</ul>
+<h3 id="指定集列表">指定集列表</h3>
+<table>
+<thead>
+<tr>
+<th>指令码</th>
+<th>助记符</th>
+<th>功能描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x00</td>
+<td>nop</td>
+<td>无操作</td>
+</tr>
+<tr>
+<td>0x01</td>
+<td>aconst_null</td>
+<td>null进栈</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>iconst_m1</td>
+<td>int型常量值-1进栈</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>iconst_0</td>
+<td>int型常量值0进栈</td>
+</tr>
+<tr>
+<td>0x04</td>
+<td>iconst_1</td>
+<td>int型常量值1进栈</td>
+</tr>
+<tr>
+<td>0x05</td>
+<td>iconst_2</td>
+<td>int型常量值2进栈</td>
+</tr>
+<tr>
+<td>0x06</td>
+<td>iconst_3</td>
+<td>int型常量值3进栈</td>
+</tr>
+<tr>
+<td>0x07</td>
+<td>iconst_4</td>
+<td>int型常量值4进栈</td>
+</tr>
+<tr>
+<td>0x08</td>
+<td>iconst_5</td>
+<td>int型常量值5进栈</td>
+</tr>
+<tr>
+<td>0x09</td>
+<td>lconst_0</td>
+<td>long型常量值0进栈</td>
+</tr>
+<tr>
+<td>0x0A</td>
+<td>lconst_0</td>
+<td>long型常量值1进栈</td>
+</tr>
+<tr>
+<td>0x0B</td>
+<td>fconst_0</td>
+<td>long型常量值0进栈</td>
+</tr>
+<tr>
+<td>0x0C</td>
+<td>fconst_1</td>
+<td>float型常量值0进栈</td>
+</tr>
+<tr>
+<td>0x0D</td>
+<td>fconst_2</td>
+<td>float型常量值1进栈</td>
+</tr>
+<tr>
+<td>0x0E</td>
+<td>dconst_0</td>
+<td>double型常量值0进栈</td>
+</tr>
+<tr>
+<td>0x0F</td>
+<td>dconst_1</td>
+<td>double型常量值1进栈</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>bipush</td>
+<td>将一个byte型常量值推送至栈顶</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td>sipush</td>
+<td>将一个short型常量值推送至栈顶</td>
+</tr>
+<tr>
+<td>0x12</td>
+<td>ldc</td>
+<td>将int、float或String型常量值从常量池中推送至栈顶</td>
+</tr>
+<tr>
+<td>0x13</td>
+<td>ldc_w</td>
+<td>将int、float或String型常量值从常量池中推送至栈顶（宽索引）</td>
+</tr>
+<tr>
+<td>0x14</td>
+<td>ldc2_w</td>
+<td>将long或double型常量值从常量池中推送至栈顶（宽索引）</td>
+</tr>
+<tr>
+<td>0x15</td>
+<td>iload</td>
+<td>指定的int型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x16</td>
+<td>lload</td>
+<td>指定的long型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x17</td>
+<td>fload</td>
+<td>指定的float型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x18</td>
+<td>dload</td>
+<td>指定的double型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x19</td>
+<td>aload</td>
+<td>当前frame的局部变量数组中下标为index的引用型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x1A</td>
+<td>iload_0</td>
+<td>第一个int型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x1B</td>
+<td>iload_1</td>
+<td>第二个int型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x1C</td>
+<td>iload_2</td>
+<td>第三个int型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x1D</td>
+<td>iload_3</td>
+<td>第四个int型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x1E</td>
+<td>lload_0</td>
+<td>第一个long型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x1F</td>
+<td>lload_1</td>
+<td>第二个long型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td>lload_2</td>
+<td>第三个long型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x21</td>
+<td>lload_3</td>
+<td>第四个long型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x22</td>
+<td>fload_0</td>
+<td>第一个float型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x23</td>
+<td>fload_1</td>
+<td>第二个float型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x24</td>
+<td>fload_2</td>
+<td>第三个float型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x25</td>
+<td>fload_3</td>
+<td>第四个float型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x26</td>
+<td>dload_0</td>
+<td>第一个double型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x27</td>
+<td>dload_1</td>
+<td>第二个double型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x28</td>
+<td>dload_2</td>
+<td>第三个double型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x29</td>
+<td>dload_3</td>
+<td>第四个double型局部变量进栈</td>
+</tr>
+<tr>
+<td>0x2A</td>
+<td>aload_0</td>
+<td>该指令的行为类似于aload指令index为0的情况</td>
+</tr>
+<tr>
+<td>0x2B</td>
+<td>aload_1</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x2C</td>
+<td>aload_2</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x2D</td>
+<td>aload_3</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x2E</td>
+<td>iaload</td>
+<td>指定的int型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x2F</td>
+<td>laload</td>
+<td>指定的long型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x30</td>
+<td>faload</td>
+<td>指定的float型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x31</td>
+<td>daload</td>
+<td>指定的double型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x32</td>
+<td>aaload</td>
+<td>栈顶的数组下标（index）、数组引用（arrayref）出栈，并根据这两个数值，取出对应的数组元素值（value）进栈</td>
+</tr>
+<tr>
+<td>0x33</td>
+<td>baload</td>
+<td>指定的boolean或byte型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x34</td>
+<td>caload</td>
+<td>指定的char型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x35</td>
+<td>saload</td>
+<td>指定的short型数组的指定下标处的值进栈</td>
+</tr>
+<tr>
+<td>0x36</td>
+<td>istore</td>
+<td>将栈顶int型数值存入指定的局部变量</td>
+</tr>
+<tr>
+<td>0x37</td>
+<td>lstore</td>
+<td>将栈顶long型数值存入指定的局部变量</td>
+</tr>
+<tr>
+<td>0x38</td>
+<td>fstore</td>
+<td>将栈顶float型数值存入指定的局部变量</td>
+</tr>
+<tr>
+<td>0x39</td>
+<td>dstore</td>
+<td>将栈顶double型数值存入指定的局部变量</td>
+</tr>
+<tr>
+<td>0x3A</td>
+<td>astore</td>
+<td>将栈顶数值（objectref）存入当前  frame的局部变量数组中指定下标（index）处的变量中，栈顶数值出栈</td>
+</tr>
+<tr>
+<td>0x3B</td>
+<td>istore_0</td>
+<td>将栈顶int型数值存入第一个局部变量</td>
+</tr>
+<tr>
+<td>0x3C</td>
+<td>istore_1</td>
+<td>将栈顶int型数值存入第二个局部变量</td>
+</tr>
+<tr>
+<td>0x3D</td>
+<td>istore_2</td>
+<td>将栈顶int型数值存入第三个局部变量</td>
+</tr>
+<tr>
+<td>0x3CE</td>
+<td>istore_3</td>
+<td>将栈顶int型数值存入第四个局部变量</td>
+</tr>
+<tr>
+<td>0x3F</td>
+<td>lstore_0</td>
+<td>将栈顶long型数值存入第一个局部变量</td>
+</tr>
+<tr>
+<td>0x40</td>
+<td>lstore_1</td>
+<td>将栈顶long型数值存入第二个局部变量</td>
+</tr>
+<tr>
+<td>0x41</td>
+<td>lstore_2</td>
+<td>将栈顶long型数值存入第三个局部变量</td>
+</tr>
+<tr>
+<td>0x42</td>
+<td>lstore_3</td>
+<td>将栈顶long型数值存入第四个局部变量</td>
+</tr>
+<tr>
+<td>0x43</td>
+<td>fstore_0</td>
+<td>将栈顶float型数值存入第一个局部变量</td>
+</tr>
+<tr>
+<td>0x44</td>
+<td>fstore_1</td>
+<td>将栈顶float型数值存入第二个局部变量</td>
+</tr>
+<tr>
+<td>0x45</td>
+<td>fstore_2</td>
+<td>将栈顶float型数值存入第三个局部变量</td>
+</tr>
+<tr>
+<td>0x46</td>
+<td>fstore_3</td>
+<td>将栈顶float型数值存入第四个局部变量</td>
+</tr>
+<tr>
+<td>0x47</td>
+<td>dstore_0</td>
+<td>将栈顶double型数值存入第一个局部变量</td>
+</tr>
+<tr>
+<td>0x48</td>
+<td>dstore_1</td>
+<td>将栈顶double型数值存入第二个局部变量</td>
+</tr>
+<tr>
+<td>0x49</td>
+<td>dstore_2</td>
+<td>将栈顶double型数值存入第三个局部变量</td>
+</tr>
+<tr>
+<td>0x4A</td>
+<td>dstore_3</td>
+<td>将栈顶double型数值存入第四个局部变量</td>
+</tr>
+<tr>
+<td>0x4B</td>
+<td>astore_0</td>
+<td>该指令的行为类似于astore指令index为0的情况</td>
+</tr>
+<tr>
+<td>0x4C</td>
+<td>astore_1</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x4D</td>
+<td>astore_2</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x4E</td>
+<td>astore_3</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x4E</td>
+<td>astore_3</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>0x4F</td>
+<td>iastore</td>
+<td>将栈顶int型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x50</td>
+<td>lastore</td>
+<td>将栈顶long型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x51</td>
+<td>fastore</td>
+<td>将栈顶float型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x52</td>
+<td>dastore</td>
+<td>根据栈顶的引用型数值（value）、数组下标（index）、数组引用（arrayref）出栈，将数值存入对应的数组元素中</td>
+</tr>
+<tr>
+<td>0x53</td>
+<td>aastore</td>
+<td>将栈顶float型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x54</td>
+<td>bastore</td>
+<td>将栈顶boolean或byte型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x55</td>
+<td>castore</td>
+<td>将栈顶char型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x56</td>
+<td>sastore</td>
+<td>将栈顶short型数值存入指定数组的指定下标处</td>
+</tr>
+<tr>
+<td>0x57</td>
+<td>pop</td>
+<td>栈顶数值出栈 (该栈顶数值不能是long或double型)</td>
+</tr>
+<tr>
+<td>0x58</td>
+<td>pop2</td>
+<td>栈顶的一个（如果是long、double型的)或两个（其它类型的）数值出栈</td>
+</tr>
+<tr>
+<td>0x59</td>
+<td>dup</td>
+<td>复制栈顶数值，并且复制值进栈</td>
+</tr>
+<tr>
+<td>0x5A</td>
+<td>dup_x1</td>
+<td>复制栈顶数值，并且复制值进栈2次</td>
+</tr>
+<tr>
+<td>0x5B</td>
+<td>dup_x2</td>
+<td>复制栈顶数值，并且复制值进栈2次或3次</td>
+</tr>
+<tr>
+<td>0x5C</td>
+<td>dup2</td>
+<td>复制栈顶一个（long、double型的)或两个（其它类型的）数值，并且复制值进栈</td>
+</tr>
+<tr>
+<td>0x5D</td>
+<td>dup2_x1</td>
+<td>复制栈顶一个（long、double型的)或两个（其它类型的）数值，并且复制值进栈</td>
+</tr>
+<tr>
+<td>0x5E</td>
+<td>dup2_x2</td>
+<td>复制栈顶一个（long、double型的)或两个（其它类型的）数值，并且复制值进栈</td>
+</tr>
+<tr>
+<td>0x5F</td>
+<td>swap</td>
+<td>栈顶的两个数值互换(要求栈顶的两个数值不能是long或double型的)</td>
+</tr>
+<tr>
+<td>0x60</td>
+<td>iadd</td>
+<td>栈顶两int型数值相加，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x61</td>
+<td>ladd</td>
+<td>栈顶两long型数值相加，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x62</td>
+<td>fadd</td>
+<td>栈顶两float型数值相加，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x63</td>
+<td>dadd</td>
+<td>栈顶两double型数值相加，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x64</td>
+<td>isub</td>
+<td>栈顶两int型数值相减，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x65</td>
+<td>lsub</td>
+<td>栈顶两long型数值相减，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x66</td>
+<td>fsub</td>
+<td>栈顶两float型数值相减，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x67</td>
+<td>dsub</td>
+<td>栈顶两double型数值相减，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x68</td>
+<td>imul</td>
+<td>栈顶两int型数值相乘，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x69</td>
+<td>lmul</td>
+<td>栈顶两long型数值相乘，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x6A</td>
+<td>fmul</td>
+<td>栈顶两float型数值相乘，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x6B</td>
+<td>dmul</td>
+<td>栈顶两double型数值相乘，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x6C</td>
+<td>idiv</td>
+<td>栈顶两int型数值相除，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x6D</td>
+<td>ldiv</td>
+<td>栈顶两long型数值相除，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x6E</td>
+<td>fdiv</td>
+<td>栈顶两float型数值相除，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x6F</td>
+<td>ddiv</td>
+<td>栈顶两double型数值相除，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x70</td>
+<td>irem</td>
+<td>栈顶两int型数值作取模运算，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x71</td>
+<td>irem</td>
+<td>栈顶两long型数值作取模运算，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x72</td>
+<td>irem</td>
+<td>栈顶两float型数值作取模运算，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x73</td>
+<td>irem</td>
+<td>栈顶两double型数值作取模运算，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x74</td>
+<td>ineg</td>
+<td>栈顶int型数值取负，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x75</td>
+<td>lneg</td>
+<td>栈顶long型数值取负，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x76</td>
+<td>fneg</td>
+<td>栈顶float型数值取负，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x77</td>
+<td>dneg</td>
+<td>栈顶double型数值取负，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x78</td>
+<td>ishl</td>
+<td>int型数值左移指定位数，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x79</td>
+<td>lshl</td>
+<td>long型数值左移指定位数，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x7A</td>
+<td>ishr</td>
+<td>int型数值带符号右移指定位数，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x7B</td>
+<td>lshr</td>
+<td>long型数值带符号右移指定位数，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x7C</td>
+<td>iushr</td>
+<td>int型数值无符号右移指定位数，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x7D</td>
+<td>lushr</td>
+<td>long型数值无符号右移指定位数，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x7E</td>
+<td>iand</td>
+<td>栈顶两int型数值按位与，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x7F</td>
+<td>land</td>
+<td>栈顶两long型数值按位与，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x80</td>
+<td>ior</td>
+<td>栈顶两int型数值按位或，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x81</td>
+<td>lor</td>
+<td>栈顶两long型数值按位或，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x82</td>
+<td>ixor</td>
+<td>栈顶两int型数值按位异或，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x83</td>
+<td>lxor</td>
+<td>栈顶两long型数值按位异或，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x84</td>
+<td>iinc</td>
+<td>指定int型变量增加指定值</td>
+</tr>
+<tr>
+<td>0x85</td>
+<td>i2l</td>
+<td>栈顶int值强转long值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x86</td>
+<td>i2f</td>
+<td>栈顶int值强转float值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x87</td>
+<td>i2d</td>
+<td>栈顶int值强转double值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x88</td>
+<td>l2i</td>
+<td>栈栈顶long值强转int值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x89</td>
+<td>l2f</td>
+<td>栈顶long值强转float值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x8A</td>
+<td>l2d</td>
+<td>栈顶long值强转double值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x8B</td>
+<td>f2i</td>
+<td>栈顶float值强转int值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x8C</td>
+<td>f2l</td>
+<td>栈顶int值强转long值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x8D</td>
+<td>f2d</td>
+<td>栈顶float值强转double值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x8E</td>
+<td>d2i</td>
+<td>栈顶double值强转int值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x8F</td>
+<td>d2l</td>
+<td>栈顶double值强转long值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x90</td>
+<td>d2f</td>
+<td>栈顶double值强转float值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x91</td>
+<td>i2b</td>
+<td>栈顶int值强转byte值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x92</td>
+<td>i2c</td>
+<td>栈顶int值强转char值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x93</td>
+<td>i2s</td>
+<td>栈顶int值强转short值，并且结果进栈</td>
+</tr>
+<tr>
+<td>0x94</td>
+<td>lcmp</td>
+<td>比较栈顶两long型数值大小，并且结果（1，0，-1）进栈</td>
+</tr>
+<tr>
+<td>0x95</td>
+<td>fcmpl</td>
+<td>比较栈顶两float型数值大小，并且结果（1，0，-1）进栈；当其中一个数值为NaN时， -1进栈</td>
+</tr>
+<tr>
+<td>0x96</td>
+<td>fcmpg</td>
+<td>比较栈顶两float型数值大小，并且结果（1，0，-1）进栈；当其中一个数值为NaN时，1进栈</td>
+</tr>
+<tr>
+<td>0x97</td>
+<td>dcmpl</td>
+<td>比较栈顶两double型数值大小，并且结果（1，0，-1）进栈；当其中一个数值为NaN时，-1进栈</td>
+</tr>
+<tr>
+<td>0x98</td>
+<td>dcmpg</td>
+<td>比较栈顶两double型数值大小，并且结果（1，0，-1）进栈；当其中一个数值为NaN时，1进栈</td>
+</tr>
+<tr>
+<td>0x99</td>
+<td>ifeq</td>
+<td>当栈顶int型数值等于0时跳转</td>
+</tr>
+<tr>
+<td>0x9A</td>
+<td>ifne</td>
+<td>当栈顶int型数值不等于0时跳转</td>
+</tr>
+<tr>
+<td>0x9B</td>
+<td>iflt</td>
+<td>当栈顶int型数值小于0时跳转</td>
+</tr>
+<tr>
+<td>0x9C</td>
+<td>ifge</td>
+<td>当栈顶int型数值大于等于0时跳转</td>
+</tr>
+<tr>
+<td>0x9D</td>
+<td>ifgt</td>
+<td>当栈顶int型数值大于0时跳转</td>
+</tr>
+<tr>
+<td>0x9E</td>
+<td>ifle</td>
+<td>当栈顶int型数值小于等于0时跳转</td>
+</tr>
+<tr>
+<td>0x9F</td>
+<td>if_icmpeq</td>
+<td>比较栈顶两int型数值大小，当结果等于0时跳转</td>
+</tr>
+<tr>
+<td>0xA0</td>
+<td>if_icmpne</td>
+<td>比较栈顶两int型数值大小，当结果不等于0时跳转</td>
+</tr>
+<tr>
+<td>0xA1</td>
+<td>if_icmplt</td>
+<td>比较栈顶两int型数值大小，当结果小于0时跳转</td>
+</tr>
+<tr>
+<td>0xA2</td>
+<td>if_icmpge</td>
+<td>比较栈顶两int型数值大小，当结果大于等于0时跳转</td>
+</tr>
+<tr>
+<td>0xA3</td>
+<td>if_icmpgt</td>
+<td>比较栈顶两int型数值大小，当结果大于0时跳转</td>
+</tr>
+<tr>
+<td>0xA4</td>
+<td>if_icmple</td>
+<td>比较栈顶两int型数值大小，当结果小于等于0时跳转</td>
+</tr>
+<tr>
+<td>0xA5</td>
+<td>if_acmpeq</td>
+<td>比较栈顶两引用型数值，当结果相等时跳转</td>
+</tr>
+<tr>
+<td>0xA7</td>
+<td>goto</td>
+<td>无条件跳转</td>
+</tr>
+<tr>
+<td>0xA8</td>
+<td>jsr</td>
+<td>跳转至指定16位offset位置，并将jsr下一条指令地址压入栈顶</td>
+</tr>
+<tr>
+<td>0xA9</td>
+<td>ret</td>
+<td>返回至局部变量指定的index的指令位置（通常与jsr、jsr_w联合使用）</td>
+</tr>
+<tr>
+<td>0xAA</td>
+<td>tableswitch</td>
+<td>用于switch条件跳转，case值连续（可变长度指令）</td>
+</tr>
+<tr>
+<td>0xAB</td>
+<td>lookupswitch</td>
+<td>用于switch条件跳转，case值不连续（可变长度指令）</td>
+</tr>
+<tr>
+<td>0xAC</td>
+<td>ireturn</td>
+<td>当前方法返回int</td>
+</tr>
+<tr>
+<td>0xAD</td>
+<td>lreturn</td>
+<td>当前方法返回long</td>
+</tr>
+<tr>
+<td>0xAE</td>
+<td>freturn</td>
+<td>当前方法返回float</td>
+</tr>
+<tr>
+<td>0xAF</td>
+<td>dreturn</td>
+<td>当前方法返回double</td>
+</tr>
+<tr>
+<td>0xB0</td>
+<td>areturn</td>
+<td>从方法中返回一个对象的引用</td>
+</tr>
+<tr>
+<td>0xB1</td>
+<td>return</td>
+<td>当前方法返回void</td>
+</tr>
+<tr>
+<td>0xB2</td>
+<td>getstatic</td>
+<td>获取指定类的静态域，并将其值压入栈顶</td>
+</tr>
+<tr>
+<td>0xB3</td>
+<td>putstatic</td>
+<td>为指定的类的静态域赋值</td>
+</tr>
+<tr>
+<td>0xB4</td>
+<td>getfield</td>
+<td>获取指定类的实例域，并将其值压入栈顶</td>
+</tr>
+<tr>
+<td>0xB5</td>
+<td>putfield</td>
+<td>为指定的类的实例域赋值</td>
+</tr>
+<tr>
+<td>0xB6</td>
+<td>invokevirtual</td>
+<td>调用实例方法</td>
+</tr>
+<tr>
+<td>0xB7</td>
+<td>invokespecial</td>
+<td>调用超类构造方法、实例初始化方法、私有方法</td>
+</tr>
+<tr>
+<td>0xB8</td>
+<td>invokestatic</td>
+<td>调用静态方法</td>
+</tr>
+<tr>
+<td>0xb9</td>
+<td>invokeinterface</td>
+<td>调用接口方法</td>
+</tr>
+<tr>
+<td>0xBB</td>
+<td>new</td>
+<td>创建一个对象，并且其引用进栈</td>
+</tr>
+<tr>
+<td>0xBC</td>
+<td>newarray</td>
+<td>创建一个基本类型数组，并且其引用进栈</td>
+</tr>
+<tr>
+<td>0xBD</td>
+<td>anewarray</td>
+<td>栈顶数值（count）作为数组长度，创建一个引用 型数组。栈顶数值出栈，数组引用进栈。</td>
+</tr>
+<tr>
+<td>0xBE</td>
+<td>arraylength</td>
+<td>栈顶的数组引用（arrayref）出栈，该数组的长度进栈。</td>
+</tr>
+<tr>
+<td>0xC0</td>
+<td>checkcast</td>
+<td>类型转换检查，如果该检查未通过将会抛出ClassCastException异常</td>
+</tr>
+<tr>
+<td>0xc1</td>
+<td>instanceof</td>
+<td>检查对象是否是指定的类的实例。如果是，1进栈；否则，0进栈</td>
+</tr>
+<tr>
+<td>0xC2</td>
+<td>monitorenter</td>
+<td>获得对象锁</td>
+</tr>
+<tr>
+<td>0xC3</td>
+<td>monitorexit</td>
+<td>释放对象锁</td>
+</tr>
+<tr>
+<td>0xC4</td>
+<td>wide</td>
+<td>用于修改其他指令的行为</td>
+</tr>
+<tr>
+<td>0xC5</td>
+<td>multianewarray</td>
+<td>创建指定类型和维度的多维数组（执行该指令时，栈中必须包含各维度的长度值），并且其引用值进栈</td>
+</tr>
+<tr>
+<td>0xC6</td>
+<td>ifnull</td>
+<td>创建指定类型和维度的多维数组（执行该指令时，栈中必须包含各维度的长度值），并且其引用值进栈</td>
+</tr>
+<tr>
+<td>0xC7</td>
+<td>ifnonnull</td>
+<td>不为null时跳转</td>
+</tr>
+<tr>
+<td>0xC8</td>
+<td>goto_w</td>
+<td>无条件跳转（宽索引）</td>
+</tr>
+<tr>
+<td>0xC9</td>
+<td>jsr_w</td>
+<td>跳转至指定32位offset位置，并且jsr_w下一条指令地址进栈</td>
+</tr>
+<tr>
+<td>0xCA</td>
+<td>breakpoint</td>
+<td>跳转至指定32位offset位置，并且jsr_w下一条指令地址进栈</td>
+</tr>
+<tr>
+<td>0xFE</td>
+<td>impdep1</td>
+<td>跳转至指定32位offset位置，并且jsr_w下一条指令地址进栈</td>
+</tr>
+<tr>
+<td>0xFF</td>
+<td>impdep2</td>
+<td>跳转至指定32位offset位置，并且jsr_w下一条指令地址进栈</td>
+</tr>
+</tbody>
+</table>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="http://blog.csdn.net/sum_rain/article/details/39892219">java反汇编及JVM指令集（指令码、助记符、功能描述）</a></li>
+<li><a href="http://cs.au.dk/~mis/dOvs/jvmspec/ref-Java.html">Java Virtual Machine Online Instruction Reference</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#jvm%E6%8C%87%E4%BB%A4%E9%9B%86">jvm指令集</a>
+<ul>
+<li><a href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E5%88%86%E7%B1%BB">指令集分类</a></li>
+<li><a href="#%E6%8C%87%E5%AE%9A%E9%9B%86%E5%88%97%E8%A1%A8">指定集列表</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/jvm-ru-men-dao-jing-tong-suo-xu-yao-bai-du-de-da-niu-bo-ke/">
+              <h3 class="post-title">
+                JVM入门到精通所需要拜读的大牛博客
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

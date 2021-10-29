@@ -1,0 +1,1067 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JVM参数—JDK8版本 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="JVM参数—JDK8版本 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+参考 Java HotSpot VM Options
+
+分类
+
+标准选项
+非标准选项
+高级运行时选项
+高级JIT编译器选项
+高级可维护性选项
+高级垃圾收集选项
+
+标准选项
+
+
+
+Option and Default Value
+Descr..." />
+    <meta name="keywords" content="JVM,Java" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              JVM参数—JDK8版本
+            </h2>
+            <div class="post-info">
+              <span>
+                2017-04-01
+              </span>
+              <span>
+                16 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/JVM/" class="post-tag">
+                  # JVM
+                </a>
+              
+                <a href="https://felayman.github.io/tag/Java/" class="post-tag">
+                  # Java
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>参考 <a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html">Java HotSpot VM Options</a></p>
+</blockquote>
+<h2 id="分类">分类</h2>
+<ul>
+<li>标准选项</li>
+<li>非标准选项</li>
+<li>高级运行时选项</li>
+<li>高级JIT编译器选项</li>
+<li>高级可维护性选项</li>
+<li>高级垃圾收集选项</li>
+</ul>
+<h3 id="标准选项">标准选项</h3>
+<table>
+<thead>
+<tr>
+<th>Option and Default Value</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-agentlib</td>
+<td style="text-align:right">加载指定的本地代理程序库</td>
+</tr>
+<tr>
+<td>-agentpath</td>
+<td style="text-align:right">加载由绝对路径名指定的本地代理程序库</td>
+</tr>
+<tr>
+<td>-client</td>
+<td style="text-align:right">选择Java HotSpot客户端VM</td>
+</tr>
+<tr>
+<td>-Dproperty</td>
+<td style="text-align:right">设置系统属性值</td>
+</tr>
+<tr>
+<td>-d32</td>
+<td style="text-align:right">在32位环境中运行应用程序</td>
+</tr>
+<tr>
+<td>-d64</td>
+<td style="text-align:right">在64位环境中运行应用程序</td>
+</tr>
+<tr>
+<td>-disableassertions/-da</td>
+<td style="text-align:right">禁用断言</td>
+</tr>
+<tr>
+<td>-disablesystemassertions/-dsa</td>
+<td style="text-align:right">禁用所有系统类中的断言</td>
+</tr>
+<tr>
+<td>-enableassertions/-ea</td>
+<td style="text-align:right">启用断言</td>
+</tr>
+<tr>
+<td>-enablesystemassertions/-esa</td>
+<td style="text-align:right">在所有系统类中启用断言</td>
+</tr>
+<tr>
+<td>-help</td>
+<td style="text-align:right">显示该java命令的使用情况信息</td>
+</tr>
+<tr>
+<td>-jar</td>
+<td style="text-align:right">执行封装在JAR文件中的程序</td>
+</tr>
+<tr>
+<td>-javaagent</td>
+<td style="text-align:right">加载指定的Java编程语言代理</td>
+</tr>
+<tr>
+<td>-server</td>
+<td style="text-align:right">选择Java HotSpot Server VM</td>
+</tr>
+<tr>
+<td>-showversion</td>
+<td style="text-align:right">显示版本信息并继续执行应用程序 HotSpot Server VM</td>
+</tr>
+<tr>
+<td>-splash</td>
+<td style="text-align:right">用imgname指定的图像显示启动画面</td>
+</tr>
+<tr>
+<td>-verbose</td>
+<td style="text-align:right">显示有关每个加载的类的信息</td>
+</tr>
+<tr>
+<td>-verbose:class</td>
+<td style="text-align:right">显示有关每个加载的类的信息</td>
+</tr>
+<tr>
+<td>-verbose:GC</td>
+<td style="text-align:right">显示有关每个垃圾回收（GC）事件的信息。</td>
+</tr>
+<tr>
+<td>-verbose:JNI</td>
+<td style="text-align:right">显示有关使用本地方法和其他Java Native Interface（JNI）活动的信息。</td>
+</tr>
+<tr>
+<td>-version</td>
+<td style="text-align:right">显示版本信息，然后退出</td>
+</tr>
+<tr>
+<td>-version</td>
+<td style="text-align:right">显示版本信息，然后退出</td>
+</tr>
+</tbody>
+</table>
+<h3 id="非标准选项">非标准选项</h3>
+<table>
+<thead>
+<tr>
+<th>Option and Default Value</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-X</td>
+<td style="text-align:right">显示所有可用-X选项的帮助</td>
+</tr>
+<tr>
+<td>-Xbatch</td>
+<td style="text-align:right">禁用后台编译</td>
+</tr>
+<tr>
+<td>-Xbootclasspath:path</td>
+<td style="text-align:right">指定由冒号（:)分隔的目录，JAR文件和ZIP存档的列表，以搜索引导类文件</td>
+</tr>
+<tr>
+<td>-Xbootclasspath /a:path</td>
+<td style="text-align:right">指定由冒号（:)分隔的目录，JAR文件和ZIP存档的列表，以附加到默认引导程序类路径的末尾</td>
+</tr>
+<tr>
+<td>-Xbootclasspath /p:path</td>
+<td style="text-align:right">指定由冒号（:)分隔的目录，JAR文件和ZIP存档的列表，以便将其前置到默认引导程序类路径的前面。</td>
+</tr>
+<tr>
+<td>-Xcheck：JNI</td>
+<td style="text-align:right">对Java本地接口（JNI）功能执行额外的检查</td>
+</tr>
+<tr>
+<td>-Xcomp</td>
+<td style="text-align:right">首次调用时强制编译方法</td>
+</tr>
+<tr>
+<td>-Xdebug</td>
+<td style="text-align:right">什么也没做。提供向后兼容性。</td>
+</tr>
+<tr>
+<td>-Xdiag</td>
+<td style="text-align:right">显示附加的诊断信息。</td>
+</tr>
+<tr>
+<td>-Xfuture</td>
+<td style="text-align:right">启用严格的类文件格式检查，以严格遵守类文件格式规范。鼓励开发人员在开发新代码时使用此标志，因为更严格的检查将成为未来版本的默认检查</td>
+</tr>
+<tr>
+<td>-Xint</td>
+<td style="text-align:right">以仅解释模式运行应用程序</td>
+</tr>
+<tr>
+<td>-Xinternalversion</td>
+<td style="text-align:right">显示比-version选项更详细的JVM版本信息，然后退出。</td>
+</tr>
+<tr>
+<td>-Xloggc:filename</td>
+<td style="text-align:right">设置详细GC事件信息应该重定向到日志的文件</td>
+</tr>
+<tr>
+<td>-Xmaxjitcodesize=size</td>
+<td style="text-align:right">定JIT编译代码的最大代码高速缓存大小（以字节为单位）</td>
+</tr>
+<tr>
+<td>-Xmixed</td>
+<td style="text-align:right">除了编译为本地代码的热门方法之外，由解释器执行所有的字节码</td>
+</tr>
+<tr>
+<td>-Xmn=size</td>
+<td style="text-align:right">设置年轻一代的堆的初始和最大大小（以字节为单位）</td>
+</tr>
+<tr>
+<td>-Xms=size</td>
+<td style="text-align:right">设置堆的初始大小（以字节为单位）。该值必须是1024的倍数，大于1 MB。</td>
+</tr>
+<tr>
+<td>-Xmx=size</td>
+<td style="text-align:right">指定内存分配池的最大大小（以字节为单位）。该值必须是1024的倍数并且大于2 MB。</td>
+</tr>
+<tr>
+<td>-Xnoclassgc</td>
+<td style="text-align:right">禁用类的垃圾回收（GC）</td>
+</tr>
+<tr>
+<td>-Xprof</td>
+<td style="text-align:right">分析正在运行的程序并将分析数据发送到标准输出</td>
+</tr>
+<tr>
+<td>-Xrs</td>
+<td style="text-align:right">减少JVM对操作系统信号的使用</td>
+</tr>
+<tr>
+<td>-Xshare</td>
+<td style="text-align:right">设置类数据共享（CDS）模式</td>
+</tr>
+<tr>
+<td>-XshowSettings:category</td>
+<td style="text-align:right">显示设置并继续。</td>
+</tr>
+<tr>
+<td>-Xss</td>
+<td style="text-align:right">设置线程堆栈大小（以字节为单位。</td>
+</tr>
+<tr>
+<td>-Xusealtsigs</td>
+<td style="text-align:right">使用替代信号，而不是SIGUSR1和SIGUSR2对JVM内部信号</td>
+</tr>
+<tr>
+<td>-Xverify</td>
+<td style="text-align:right">设置字节码验证器的模式</td>
+</tr>
+<tr>
+<td>-Xverify</td>
+<td style="text-align:right">设置字节码验证器的模式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="高级运行时选项">高级运行时选项</h3>
+<table>
+<thead>
+<tr>
+<th>Option and Default Value</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-XX：+ CheckEndorsedAndExtDirs</td>
+<td style="text-align:right">启用该选项以防止java命令运行Java应用程序</td>
+</tr>
+<tr>
+<td>-XX：+ DisableAttachMechanism</td>
+<td style="text-align:right">启用禁用允许工具附加到JVM的机制的选项</td>
+</tr>
+<tr>
+<td>-XX：ErrorFile=filename</td>
+<td style="text-align:right">指定发生不可恢复错误时写入错误数据的路径和文件名</td>
+</tr>
+<tr>
+<td>-XX：+ FailOverToOldVerifie</td>
+<td style="text-align:right">当新类型检查器失败时，启用自动故障转移到旧的检验器</td>
+</tr>
+<tr>
+<td>-XX：+ FlightRecorder</td>
+<td style="text-align:right">在应用程序的运行时期间启用Java Flight Recorder（JFR）</td>
+</tr>
+<tr>
+<td>-XX：-FlightRecorder</td>
+<td style="text-align:right">在应用程序运行期间禁用Java Flight Recorder（JFR）</td>
+</tr>
+<tr>
+<td>-XX：FlightRecorderOptions = parameter = value</td>
+<td style="text-align:right">设置控制JFR行为的参数</td>
+</tr>
+<tr>
+<td>-XX：LargePageSizeInBytes =size</td>
+<td style="text-align:right">设置用于Java堆的大页面的最大大小</td>
+</tr>
+<tr>
+<td>-XX：MaxDirectMemorySize = size</td>
+<td style="text-align:right">设置新I / O（java.nio包）直接缓冲区分配的最大总大小</td>
+</tr>
+<tr>
+<td>-XX：NativeMemoryTracking = model</td>
+<td style="text-align:right">指定跟踪JVM本机内存使用情况的模式</td>
+</tr>
+<tr>
+<td>-XX：ObjectAlignmentInBytes = 对齐</td>
+<td style="text-align:right">设置Java对象的内存对齐方式（以字节为单位）</td>
+</tr>
+<tr>
+<td>-XX：OnError = 字符串</td>
+<td style="text-align:right">设置自定义命令或一系列分号分隔的命令，以便在发生不可恢复的错误时运行</td>
+</tr>
+<tr>
+<td>-XX：OnOutOfMemoryError = 字符串</td>
+<td style="text-align:right">设置一个自定义命令或一系列分号分隔的命令，以便在OutOfMemoryError第一次抛出异常时运行</td>
+</tr>
+<tr>
+<td>-XX：+ PerfDataSaveToFile</td>
+<td style="text-align:right">如果启用，则在Java应用程序退出时保存jstat（1）二进制数据</td>
+</tr>
+<tr>
+<td>-XX：+ PrintCommandLineFlags</td>
+<td style="text-align:right">启用打印出现在命令行上的人体工程学选择的JVM标志</td>
+</tr>
+<tr>
+<td>-XX：+ PrintNMTStatistics</td>
+<td style="text-align:right">启用本地内存跟踪后，在JVM退出时启用收集的本地内存跟踪数据打印</td>
+</tr>
+<tr>
+<td>-XX：+ RelaxAccessControlCheck</td>
+<td style="text-align:right">减少验证器中的访问控制检查的数量</td>
+</tr>
+<tr>
+<td>-XX：+ ResourceManagement</td>
+<td style="text-align:right">在应用程序的运行时期间启用资源管理。</td>
+</tr>
+<tr>
+<td>-XX：ResourceManagementSampleInterval = value</td>
+<td style="text-align:right">设置控制资源管理测量的采样间隔的参数。</td>
+</tr>
+<tr>
+<td>-XX：SharedArchiveFile = path</td>
+<td style="text-align:right">指定类数据共享（CDS）存档文件的路径和名称。</td>
+</tr>
+<tr>
+<td>-XX：SharedClassListFile = file_name</td>
+<td style="text-align:right">指定包含要存储在类数据共享（CDS）存档中的类文件名称的文本文件</td>
+</tr>
+<tr>
+<td>-XX：+ ShowMessageBoxOnError</td>
+<td style="text-align:right">当JVM遇到不可恢复的错误时，启用显示对话框。</td>
+</tr>
+<tr>
+<td>-XX：StartFlightRecording = parameter = value</td>
+<td style="text-align:right">为Java应用程序启动JFR记录。</td>
+</tr>
+<tr>
+<td>-XX：ThreadStackSize = size</td>
+<td style="text-align:right">设置线程堆栈大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：+ TraceClassLoading</td>
+<td style="text-align:right">启用类加载跟踪。</td>
+</tr>
+<tr>
+<td>-XX：+ TraceClassLoadingPreorder</td>
+<td style="text-align:right">以所引用的顺序启用所有加载的类的跟踪。</td>
+</tr>
+<tr>
+<td>-XX：+ TraceClassResolution</td>
+<td style="text-align:right">启用对常量池分辨率的跟踪。</td>
+</tr>
+<tr>
+<td>-XX：+ TraceClassUnloading</td>
+<td style="text-align:right">在卸载类时启用跟踪。</td>
+</tr>
+<tr>
+<td>-XX：+ UnlockCommercialFeatures</td>
+<td style="text-align:right">启用商业功能。</td>
+</tr>
+<tr>
+<td>-XX：+ UseAltSigs</td>
+<td style="text-align:right">使得能够使用替代信号，而不是SIGUSR1和SIGUSR2用于JVM内部信号。</td>
+</tr>
+<tr>
+<td>-XX：+ UseAppCDS</td>
+<td style="text-align:right">启用应用程序类数据共享（AppCDS）。</td>
+</tr>
+<tr>
+<td>-XX：-UseBiasedLocking</td>
+<td style="text-align:right">禁用使用偏置锁定。</td>
+</tr>
+<tr>
+<td>-XX：-UseCompressedOops</td>
+<td style="text-align:right">禁用压缩指针的使用。</td>
+</tr>
+<tr>
+<td>-XX：+UseHugeTLBFS</td>
+<td style="text-align:right">这个选项对于Linux来说是相当于指定的-XX:+UseLargePages。</td>
+</tr>
+<tr>
+<td>-XX：+UseLargePages</td>
+<td style="text-align:right">启用大页面内存的使用。</td>
+</tr>
+<tr>
+<td>-XX：+UseMembar</td>
+<td style="text-align:right">在线程状态转换中启用membars。</td>
+</tr>
+<tr>
+<td>-XX：+UsePerfData</td>
+<td style="text-align:right">启用该perfdata功能。</td>
+</tr>
+<tr>
+<td>-XX：+UseTransparentHugePages</td>
+<td style="text-align:right">在Linux上，可以使用可动态增长或缩小的大页面。</td>
+</tr>
+<tr>
+<td>-XX：+AllowUserSignalHandlers</td>
+<td style="text-align:right">允许应用程序安装信号处理程序。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="高级jit编译器选项">高级JIT编译器选项</h3>
+<table>
+<thead>
+<tr>
+<th>Option and Default Value</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-XX：+ AggressiveOpts</td>
+<td style="text-align:right">启用积极的性能优化功能，预计这些功能将在即将发布的版本中成为默认功能</td>
+</tr>
+<tr>
+<td>-XX：AllocateInstancePrefetchLines = line</td>
+<td style="text-align:right">设置要在实例分配指针之前预取的行数</td>
+</tr>
+<tr>
+<td>-XX：AllocatePrefetchDistance = size</td>
+<td style="text-align:right">设置对象分配的预取距离的大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：AllocatePrefetchInstr = 指令</td>
+<td style="text-align:right">将预取指令设置为在分配指针之前预取。</td>
+</tr>
+<tr>
+<td>-XX：AllocatePrefetchLines = line</td>
+<td style="text-align:right">通过使用编译代码中生成的预取指令，设置最后一次分配对象后要加载的高速缓存行数。</td>
+</tr>
+<tr>
+<td>-XX：AllocatePrefetchStepSize = size</td>
+<td style="text-align:right">设置顺序预取指令的步长（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：AllocatePrefetchStyle = style</td>
+<td style="text-align:right">为预取指令设置生成的代码样式。</td>
+</tr>
+<tr>
+<td>-XX：+ BackgroundCompilation</td>
+<td style="text-align:right">启用后台编译。</td>
+</tr>
+<tr>
+<td>-XX：CICompilerCount = thread</td>
+<td style="text-align:right">设置要用于编译的编译器线程的数量。</td>
+</tr>
+<tr>
+<td>-XX：CodeCacheMinimumFreeSpace = size</td>
+<td style="text-align:right">设置编译所需的最小可用空间（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：CompileCommand = command，method [，option ]</td>
+<td style="text-align:right">指定要在方法上执行的命令。</td>
+</tr>
+<tr>
+<td>-XX：CompileCommandFile = 文件名</td>
+<td style="text-align:right">设置从中读取JIT编译器命令的文件。</td>
+</tr>
+<tr>
+<td>-XX：CompileOnly = 方法</td>
+<td style="text-align:right">设置编译应该限制的方法列表（用逗号分隔）。</td>
+</tr>
+<tr>
+<td>-XX：CompileThreshold = invocations</td>
+<td style="text-align:right">在编译之前设置解释的方法调用的数量。</td>
+</tr>
+<tr>
+<td>-XX：+ DoEscapeAnalysis</td>
+<td style="text-align:right">允许使用转义分析。</td>
+</tr>
+<tr>
+<td>-XX：InitialCodeCacheSize = size</td>
+<td style="text-align:right">设置初始代码缓存大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：+内嵌</td>
+<td style="text-align:right">启用方法内联。</td>
+</tr>
+<tr>
+<td>-XX：InlineSmallCode = size</td>
+<td style="text-align:right">设置应该内联的已编译方法的最大代码大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：+ LogCompilation</td>
+<td style="text-align:right">使编译活动能够记录到hotspot.log当前工作目录中指定的文件。</td>
+</tr>
+<tr>
+<td>-XX：MaxInlineSize = 大小</td>
+<td style="text-align:right">设置内联方法的最大字节码大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：MaxNodeLimit = 节点</td>
+<td style="text-align:right">设置单个方法编译期间使用的最大节点数。</td>
+</tr>
+<tr>
+<td>-XX：MaxTrivialSize = 大小</td>
+<td style="text-align:right">设置内联方法的最大字节码大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：+ OptimizeStringConcat</td>
+<td style="text-align:right">启用String串联操作的优化。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintAssembly</td>
+<td style="text-align:right">通过使用外部disassembler.so库启用打印字节码和本地方法的汇编代码。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintCompilation</td>
+<td style="text-align:right">每次编译方法时，都会通过向控制台输出消息来启用JVM的详细诊断输出</td>
+</tr>
+<tr>
+<td>-XX：+ PrintInlining</td>
+<td style="text-align:right">启用内联决策的打印</td>
+</tr>
+<tr>
+<td>-XX：ReservedCodeCacheSize = size</td>
+<td style="text-align:right">设置JIT编译代码的最大代码缓存大小（以字节为单位）</td>
+</tr>
+<tr>
+<td>-XX：RTMAbortRatio = abort_ratio</td>
+<td style="text-align:right">RTM异常中止率是指所有执行的RTM事务的百分比</td>
+</tr>
+<tr>
+<td>-XX：RTMRetryCount = number_of_retries</td>
+<td style="text-align:right">RTM锁定代码将被重试，当它被中止或繁忙时，在返回到正常的锁定机制之前由该选项指定的次数</td>
+</tr>
+<tr>
+<td>-XX：-TieredCompilation</td>
+<td style="text-align:right">禁用分层编译的使用</td>
+</tr>
+<tr>
+<td>-XX：+ UseAES</td>
+<td style="text-align:right">禁用分层编译的使用</td>
+</tr>
+<tr>
+<td>-XX：+ UseAESIntrinsics</td>
+<td style="text-align:right">UseAES和UseAESIntrinsics标志默认启用，仅支持Java HotSpot Server VM 32位和64位</td>
+</tr>
+<tr>
+<td>-XX：+ UseCodeCacheFlushing</td>
+<td style="text-align:right">在关闭编译器之前启用代码缓存刷新</td>
+</tr>
+<tr>
+<td>-XX：+ UseCondCardMark</td>
+<td style="text-align:right">在更新卡表之前，检查卡是否已被标记。</td>
+</tr>
+<tr>
+<td>-XX：+ UseRTMDeopt</td>
+<td style="text-align:right">根据中止比率自动调整RTM锁定</td>
+</tr>
+<tr>
+<td>-XX：+ UseRTMLocking</td>
+<td style="text-align:right">为所有虚拟锁生成受限制的事务内存（RTM）锁定代码，使用正常的锁定机制作为后备处理程序</td>
+</tr>
+<tr>
+<td>-XX：+ UseSHA</td>
+<td style="text-align:right">为SPARC硬件的SHA加密哈希函数启用基于硬件的内在函数</td>
+</tr>
+<tr>
+<td>-XX：+ UseSHA1Intrinsics</td>
+<td style="text-align:right">为SHA-1密码散列函数启用内部函数</td>
+</tr>
+<tr>
+<td>-XX：+ UseSHA256Intrinsics</td>
+<td style="text-align:right">为SHA-224和SHA-256密码哈希函数启用内部函数。</td>
+</tr>
+<tr>
+<td>-XX：+ UseSHA512Intrinsics</td>
+<td style="text-align:right">为SHA-384和SHA-512加密哈希函数启用内部函数。</td>
+</tr>
+<tr>
+<td>-XX：+ UseSuperWord</td>
+<td style="text-align:right">启用标量操作转换为超字节操作。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="高级可维护性选项">高级可维护性选项</h3>
+<table>
+<thead>
+<tr>
+<th>Option and Default Value</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-XX：+ ExtendedDTraceProbes</td>
+<td style="text-align:right">启用dtrace影响性能的其他工具探针</td>
+</tr>
+<tr>
+<td>-XX：+ HeapDumpOnOutOfMemory</td>
+<td style="text-align:right">在java.lang.OutOfMemoryError引发异常时，使用堆分析程序（HPROF）启用将Java堆转储到当前目录中的文件</td>
+</tr>
+<tr>
+<td>-XX：HeapDumpPath = path</td>
+<td style="text-align:right">设置用于在设置-XX:+HeapDumpOnOutOfMemoryError选项时写入由堆分析器（HPROF）提供的堆转储的路径和文件名</td>
+</tr>
+<tr>
+<td>-XX：LogFile = path</td>
+<td style="text-align:right">设置写入日志数据的路径和文件名</td>
+</tr>
+<tr>
+<td>-XX：+ PrintClassHistogram</td>
+<td style="text-align:right">在Control+C事件（SIGTERM）之后启用类实例直方图的打印</td>
+</tr>
+<tr>
+<td>-XX：+ PrintConcurrentLocks</td>
+<td style="text-align:right">java.util.concurrent在Control+C事件（SIGTERM）后启用锁打印</td>
+</tr>
+<tr>
+<td>-XX：+ UnlockDiagnosticVMOptions</td>
+<td style="text-align:right">java.util.concurrent在Control+C事件（SIGTERM）后启用锁打印</td>
+</tr>
+</tbody>
+</table>
+<h3 id="高级垃圾收集选项">高级垃圾收集选项</h3>
+<table>
+<thead>
+<tr>
+<th>Option and Default Value</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-XX：+ AggressiveHeap</td>
+<td style="text-align:right">启用Java堆优化</td>
+</tr>
+<tr>
+<td>-XX：+ AlwaysPreTouch</td>
+<td style="text-align:right">在JVM初始化期间，可以触摸Java堆上的每个页面</td>
+</tr>
+<tr>
+<td>-XX：+ CMSClassUnloadingEnabled</td>
+<td style="text-align:right">使用并发标记清除（CMS）垃圾回收器时启用类卸载</td>
+</tr>
+<tr>
+<td>-XX：CMSExpAvgFactor = 百分比</td>
+<td style="text-align:right">设置计算并发收集统计数据的指数平均值时用于对当前样本进行加权的时间百分比（0到100）</td>
+</tr>
+<tr>
+<td>-XX：CMSInitiatingOccupancyFraction = 百分比</td>
+<td style="text-align:right">设置启动CMS收集周期的旧代占有率（0到100）的百分比</td>
+</tr>
+<tr>
+<td>-XX：+ CMSScavengeBeforeRemark</td>
+<td style="text-align:right">在CMS注释步骤之前启用扫描尝试</td>
+</tr>
+<tr>
+<td>-XX：CMSTriggerRatio = 百分比</td>
+<td style="text-align:right">设置-XX:MinHeapFreeRatioCMS收集周期开始之前分配的百分比（0到100）。默认值设置为80％。</td>
+</tr>
+<tr>
+<td>-XX：ConcGCThreads = 线程</td>
+<td style="text-align:right">设置用于并发GC的线程数。缺省值取决于JVM可用的CPU数量。</td>
+</tr>
+<tr>
+<td>-XX：+ DisableExplicitGC</td>
+<td style="text-align:right">启用禁用呼叫处理的选项System.gc()。</td>
+</tr>
+<tr>
+<td>-XX：+ ExplicitGCInvokesConcurrent</td>
+<td style="text-align:right">启用使用System.gc()请求调用并发GC 。</td>
+</tr>
+<tr>
+<td>-XX：+ ExplicitGCInvokesConcurrentAndUnloadsClasses</td>
+<td style="text-align:right">通过System.gc()在并发GC循环期间使用请求和卸载类来启用并发GC的调用 。</td>
+</tr>
+<tr>
+<td>-XX：G1HeapRegionSize = size</td>
+<td style="text-align:right">设置在使用垃圾优先（G1）收集器时Java堆被细分的区域的大小。</td>
+</tr>
+<tr>
+<td>-XX：+ G1PrintHeapRegions</td>
+<td style="text-align:right">启用打印有关分配哪些区域以及哪些区域由G1收集器回收的信息。</td>
+</tr>
+<tr>
+<td>-XX：G1ReservePercent = 百分比</td>
+<td style="text-align:right">设置保留为假天花板的堆的百分比（0到50），以减少G1收集器升级失败的可能性。</td>
+</tr>
+<tr>
+<td>-XX：InitialHeapSize = size</td>
+<td style="text-align:right">设置内存分配池的初始大小（以字节为单位）。</td>
+</tr>
+<tr>
+<td>-XX：InitialSurvivorRatio = 比率</td>
+<td style="text-align:right">设置吞吐量垃圾回收器使用的初始存活空间比率。</td>
+</tr>
+<tr>
+<td>-XX：InitiatingHeapOccupancyPercent = 百分比</td>
+<td style="text-align:right">设置启动并发GC循环的堆占用百分比（0到100）。</td>
+</tr>
+<tr>
+<td>-XX：MaxGCPauseMillis = 时间</td>
+<td style="text-align:right">设置最大GC暂停时间（以毫秒为单位）的目标。</td>
+</tr>
+<tr>
+<td>-XX：MaxHeapSize = 大小</td>
+<td style="text-align:right">设置内存分配池的最大大小（以字节为单位）</td>
+</tr>
+<tr>
+<td>-XX：MaxHeapFreeRatio = 百分比</td>
+<td style="text-align:right">设置GC事件后允许的最大空闲堆空间百分比（0到100）</td>
+</tr>
+<tr>
+<td>-XX：MaxMetaspaceSize = size</td>
+<td style="text-align:right">设置可以为类元数据分配的最大本机内存量</td>
+</tr>
+<tr>
+<td>-XX：MaxNewSize = 大小</td>
+<td style="text-align:right">设置年轻一代堆的最大大小（以字节为单位）</td>
+</tr>
+<tr>
+<td>-XX：MaxTenuringThreshold = 阈值</td>
+<td style="text-align:right">设置自适应GC大小的最大使用期限</td>
+</tr>
+<tr>
+<td>-XX：MetaspaceSize = 大小</td>
+<td style="text-align:right">设置首次超出时将触发垃圾回收的已分配类元数据空间的大小。</td>
+</tr>
+<tr>
+<td>-XX：MinHeapFreeRatio = 百分比</td>
+<td style="text-align:right">GC事件后设置空闲堆空间的最小允许百分比（0到100）。</td>
+</tr>
+<tr>
+<td>-XX：NewRatio = 比率</td>
+<td style="text-align:right">设置年轻代和老年代之间的比例。</td>
+</tr>
+<tr>
+<td>-XX：NewSize = 大小</td>
+<td style="text-align:right">设置年轻一代堆的初始大小。</td>
+</tr>
+<tr>
+<td>-XX：ParallelGCThreads = 线程</td>
+<td style="text-align:right">设置在年轻代和老年代中用于并行垃圾收集的线程数。</td>
+</tr>
+<tr>
+<td>-XX：+ ParallelRefProcEnabled</td>
+<td style="text-align:right">启用并行参考处理。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintAdaptiveSizePolicy</td>
+<td style="text-align:right">启用打印有关自适应生成大小的信息。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGC</td>
+<td style="text-align:right">允许在每个GC上打印消息。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGCApplicationConcurrentTime</td>
+<td style="text-align:right">允许打印自上次暂停以来经过的时间。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGCApplicationStoppedTime</td>
+<td style="text-align:right">可以打印暂停（例如GC暂停）持续的时间。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGCDateStamps</td>
+<td style="text-align:right">在每个GC上打印日期戳记。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGCDetails</td>
+<td style="text-align:right">可在每个GC上打印详细的消息。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGCTaskTimeStamps</td>
+<td style="text-align:right">为每个GC工作线程任务启用打印时间戳。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintGCTimeStamps</td>
+<td style="text-align:right">在每个GC上打印时间戳。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintStringDeduplicationStatistics</td>
+<td style="text-align:right">打印详细的重复数据删除统计信息。</td>
+</tr>
+<tr>
+<td>-XX：+ PrintTenuringDistribution</td>
+<td style="text-align:right">启用时代年龄信息的打印。</td>
+</tr>
+<tr>
+<td>-XX：+ ScavengeBeforeFullGC</td>
+<td style="text-align:right">在每个完整的GC之前启用年轻一代的GC。</td>
+</tr>
+<tr>
+<td>-XX：SoftRefLRUPolicyMSPerMB = 时间</td>
+<td style="text-align:right">设置在最后一次引用之后，软堆中可轻松访问的对象在堆上保持活动的时间。</td>
+</tr>
+<tr>
+<td>-XX：StringDeduplicationAgeThreshold = 阈值</td>
+<td style="text-align:right">String达到指定年龄的对象被认为是重复数据删除的候选对象。</td>
+</tr>
+<tr>
+<td>-XX：SurvivorRatio = 比率</td>
+<td style="text-align:right">设置伊甸园空间大小和幸存者空间大小之间的比率。</td>
+</tr>
+<tr>
+<td>-XX：TargetSurvivorRatio = 百分比</td>
+<td style="text-align:right">设置年轻垃圾回收后使用的生存空间（0到100）的所需百分比。</td>
+</tr>
+<tr>
+<td>-XX：TLABSize = size</td>
+<td style="text-align:right">设置线程本地分配缓冲区（TLAB）的初始大小（以字节为单位）</td>
+</tr>
+<tr>
+<td>-XX：+ UseAdaptiveSizePolic</td>
+<td style="text-align:right">允许使用自适应生成大小</td>
+</tr>
+<tr>
+<td>-XX：+ UseCMSInitiatingOccupancyOnly</td>
+<td style="text-align:right">启用占用值作为启动CMS收集器的唯一标准</td>
+</tr>
+<tr>
+<td>-XX：+ UseConcMarkSweepGC</td>
+<td style="text-align:right">为旧一代启用CMS垃圾收集器</td>
+</tr>
+<tr>
+<td>-XX：+ UseG1GC</td>
+<td style="text-align:right">启用垃圾优先（G1）垃圾回收器</td>
+</tr>
+<tr>
+<td>-XX：+ UseGCOverheadLimit</td>
+<td style="text-align:right">在引发OutOfMemoryError异常之前，允许使用限制JVM花费在GC上的时间比例的策略</td>
+</tr>
+<tr>
+<td>-XX：+ UseNUMA</td>
+<td style="text-align:right">通过增加应用程序对低延迟内存的使用，在非统一内存架构（NUMA）的计算机上启用应用程序的性能优化</td>
+</tr>
+<tr>
+<td>-XX：+ UseParallelGC</td>
+<td style="text-align:right">启用并行扫描垃圾回收器（也称为吞吐量收集器），通过利用多个处理器来提高应用程序的性能。</td>
+</tr>
+<tr>
+<td>-XX：+ UseParallelOldGC</td>
+<td style="text-align:right">为完整的GC启用并行垃圾回收器</td>
+</tr>
+<tr>
+<td>-XX：+ UseParNewGC</td>
+<td style="text-align:right">在年轻一代中允许使用并行线程进行收集</td>
+</tr>
+<tr>
+<td>-XX：+ UseSerialGC</td>
+<td style="text-align:right">启用串行垃圾收集器</td>
+</tr>
+<tr>
+<td>-XX：+ UseSHM</td>
+<td style="text-align:right">在Linux上，使JVM能够使用共享内存来设置大页面。</td>
+</tr>
+<tr>
+<td>-XX：+ UseStringDeduplication</td>
+<td style="text-align:right">启用字符串重复数据删除。</td>
+</tr>
+<tr>
+<td>-XX：+ UseTLAB</td>
+<td style="text-align:right">在新一代空间中启用线程局部分配块（TLAB）。</td>
+</tr>
+<tr>
+<td>-XX：+ UseTLAB</td>
+<td style="text-align:right">在新一代空间中启用线程局部分配块（TLAB）。</td>
+</tr>
+</tbody>
+</table>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%88%86%E7%B1%BB">分类</a>
+<ul>
+<li><a href="#%E6%A0%87%E5%87%86%E9%80%89%E9%A1%B9">标准选项</a></li>
+<li><a href="#%E9%9D%9E%E6%A0%87%E5%87%86%E9%80%89%E9%A1%B9">非标准选项</a></li>
+<li><a href="#%E9%AB%98%E7%BA%A7%E8%BF%90%E8%A1%8C%E6%97%B6%E9%80%89%E9%A1%B9">高级运行时选项</a></li>
+<li><a href="#%E9%AB%98%E7%BA%A7jit%E7%BC%96%E8%AF%91%E5%99%A8%E9%80%89%E9%A1%B9">高级JIT编译器选项</a></li>
+<li><a href="#%E9%AB%98%E7%BA%A7%E5%8F%AF%E7%BB%B4%E6%8A%A4%E6%80%A7%E9%80%89%E9%A1%B9">高级可维护性选项</a></li>
+<li><a href="#%E9%AB%98%E7%BA%A7%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E9%80%89%E9%A1%B9">高级垃圾收集选项</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/chang-yong-de-shou-ji-qi-zu-he/">
+              <h3 class="post-title">
+                常用的收集器组合
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

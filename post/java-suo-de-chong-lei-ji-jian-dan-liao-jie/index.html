@@ -1,0 +1,714 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java锁的种类及简单了解 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java锁的种类及简单了解 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+了解Java中提供的锁类型以及使用场景
+
+前言
+Java中的锁是一种用来对共享资源的访问策略,Java提供多种类型的锁来实现该访问策略.
+总体上来看，锁分为两种：休眠式锁和自旋锁。
+休眠式锁的原理是当当前线程不能获取到指定的锁时，它就让出..." />
+    <meta name="keywords" content="Java并发" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java锁的种类及简单了解
+            </h2>
+            <div class="post-info">
+              <span>
+                2017-01-01
+              </span>
+              <span>
+                28 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Java并发/" class="post-tag">
+                  # Java并发
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>了解Java中提供的锁类型以及使用场景</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>Java中的锁是一种用来对共享资源的访问策略,Java提供多种类型的锁来实现该访问策略.</p>
+<p>总体上来看，锁分为两种：休眠式锁和自旋锁。</p>
+<p>休眠式锁的原理是当当前线程不能获取到指定的锁时，它就让出CPU，加入到一个等待队列中，直到被唤醒，它才会被重新调度执行。自旋锁的原理是若当前线程不能获取到指定的锁，它不会主动让出CPU，而是会在一个紧凑循环中重复的检测锁是否已经可用，即忙等待(busy wait)。</p>
+<p><strong>休眠锁与自旋锁的对比</strong></p>
+<p>如果对临界资源的访问时间很短（如更新引用计数、修改状态等），等待锁的线程只要稍等片刻即可取得资源的访问权，这个开销要远远小于进入休眠再被唤醒。反过来说,如果自旋锁迟迟无法访问<br>
+临界资源而且又不释放CPU(不进入休眠),则自旋锁的性能将大大降低.</p>
+<p>Java针对休眠锁和自旋锁都有多种实现方式,以此来适应不同的场景.</p>
+<h2 id="锁的种类">锁的种类</h2>
+<h2 id="1-自旋锁spin-lock">1. 自旋锁(spin lock)</h2>
+<p>自旋锁是一种用于保护多线程共享资源的锁，与一般互斥锁（mutex）不同之处在于当自旋锁尝试获取锁时以忙等待（busy waiting）的形式不断地循环检查锁是否可用。<br>
+在多CPU的环境中，对持有锁较短的程序来说，使用自旋锁代替一般的互斥锁往往能够提高程序的性能。</p>
+<p>Java的线程是映射到操作系统的原生线程之上的，如果要阻塞或唤醒一个线程，都需要操作系统来帮忙完成，这就需要从用户态转换到核心态中，因此状态装换需要耗费很多的处理器时间，对于代码简单的同步块（如被synchronized修饰的getter()和setter()方法），状态转换消耗的时间有可能比用户代码执行的时间还要长。</p>
+<p>虚拟机的开发团队注意到在许多应用上，共享数据的锁定状态只会持续很短的一段时间，为了这段时间取挂起和恢复现场并不值得。如果物理机器有一个以上的处理器，能让两个或以上的线程同时并行执行，我们就可以让后面请求锁的那个线程“稍等一下“，但不放弃处理器的执行时间，看看持有锁的线程是否很快就会释放锁。为了让线程等待，我们只需让线程执行一个忙循环（自旋），这项技术就是所谓的自旋锁。</p>
+<p>自旋等待不能代替阻塞。自旋等待本身虽然避免了线程切换的开销，但它是要占用处理器时间的，因此，如果锁被占用的时间很短，自旋当代的效果就会非常好，反之，如果锁被占用的时间很长，那么自旋的线程只会拜拜浪费处理器资源。因此，自旋等待的时间必须要有一定的限度，如果自旋超过了限定次数（默认是10次，可以使用-XX:PreBlockSpin来更改）没有成功获得锁，就应当使用传统的方式去挂起线程了。</p>
+<p>自旋锁在JDK1.4.2中引入，使用-XX:+UseSpinning来开启。JDK6中已经变为默认开启，并且引入了自适应的自旋锁。自适应意味着自旋的时间不在固定了，而是由前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定。</p>
+<p>使用自旋锁时要注意：</p>
+<ul>
+<li>自旋是在轻量级锁中使用的，在重量级锁中，线程不使用自旋。</li>
+<li>由于自旋时不释放CPU，因而持有自旋锁的线程应该尽快释放自旋锁，否则等待该自旋锁的线程会一直在哪里自旋，这就会浪费CPU时间。</li>
+<li>持有自旋锁的线程在sleep之前应该释放自旋锁以便其他咸亨可以获得该自旋锁。内核编程中，如果持有自旋锁的代码sleep了就可能导致整个系统挂起。</li>
+</ul>
+<p>适合场景:</p>
+<ul>
+<li>如果是多核处理器，如果预计线程等待锁的时间很短，短到比线程两次上下文切换时间要少的情况下，使用自旋锁是划算的</li>
+<li>如果是单核处理器，一般建议不要使用自旋锁</li>
+<li>如果加锁的代码经常被调用，但竞争情况很少发生时，应该优先考虑使用自旋锁，自旋锁的开销比较小，互斥量的开销较大。</li>
+<li>多个线程需要竞争较长时间使用的独占性资源（打印机/网络等），此时应当用非自旋锁。</li>
+</ul>
+<p>自旋锁的简单实现:</p>
+<p>最简单的自旋锁是采用让当前线程不停地的在循环体内执行实现的，当循环的条件被其他线程改变时 才能进入临界区。如下</p>
+<pre><code class="language-java">public class SpinLock {
+  private AtomicReference&lt;Thread&gt; sign =new AtomicReference&lt;&gt;();
+  public void lock(){
+    Thread current = Thread.currentThread();
+    while(!sign .compareAndSet(null, current)){
+    }
+  }
+  public void unlock (){
+    Thread current = Thread.currentThread();
+    sign .compareAndSet(current, null);
+  }
+}
+</code></pre>
+<p>使用了CAS原子操作，lock函数将owner设置为当前线程，并且预测原来的值为空。unlock函数将owner设置为null，并且预测值为当前线程。</p>
+<p>当有第二个线程调用lock操作时由于owner值不为空，导致循环一直被执行，直至第一个线程调用unlock函数将owner设置为null，第二个线程才能进入临界区。</p>
+<p>由于自旋锁只是将当前线程不停地执行循环体，不进行线程状态的改变，所以响应速度更快。但当线程数不停增加时，性能下降明显，因为每个线程都需要执行，占用CPU时间。如果线程竞争不激烈，并且保持锁的时间段。适合使用自旋锁。</p>
+<p>Java中的自旋锁是基于CAS + volatile来实现的,但多个线程对同一个变量一直使用CAS操作，那么会有大量修改操作，从而产生大量的缓存一致性流量，因为每一次CAS操作都会发出广播通知其他处理器，从而影响程序的性能。</p>
+<p>而自旋锁也会根据不同的场景衍生出几种不同类型的自旋锁</p>
+<p>首先需要了解的是,普通的自旋锁是多个线程同时自旋,访问共享资源是随机的</p>
+<p><strong>1. TicketLock</strong></p>
+<p>TicketLock的场景是解决对共享资源的访问是顺序的,即保证FIFO,即保证第一个自旋的线程必然会第一个访问共享资源</p>
+<p>TicketLock的简单实现如下:</p>
+<pre><code class="language-java">class TicketLock {
+	private AtomicInteger serviceNum = new AtomicInteger(0);
+	private AtomicInteger ticketNum = new AtomicInteger(0);
+	private static final ThreadLocal&lt;Integer&gt; myNum = new ThreadLocal&lt;Integer&gt;();
+	public void lock () {
+		myNum.set(ticketNum.getAndIncrement());
+		while (serviceNum.get() != myNum.get()) {};
+	}
+	public void unlock() {
+		serviceNum.compareAndSet(myNum.get(), myNum.get() + 1);
+	}
+}
+</code></pre>
+<p>Ticket锁主要解决的是访问顺序的问题，主要的问题是在多核cpu上，每次都要查询一个serviceNum 服务号，影响性能（必须要到主内存读取，并阻止其他cpu修改）,<br>
+因此我们可以使用CLHLock 和 MCSlock</p>
+<p><strong>2. CLHLock 和 MCSlock</strong></p>
+<p>CLHLock和MCSlock都是对TicketLock的一种改进,同样保证提供先来先服务的公平性(顺序性),两者的区别是针对两种不同的CPU架构的优化方式不同:</p>
+<p>我们先了解下常见的两种CPU架构:</p>
+<p><strong>SMP(Symmetric Multi-Processor)</strong></p>
+<p>对称多处理器结构，指服务器中多个CPU对称工作，每个CPU访问内存地址所需时间相同。其主要特征是共享，包含对CPU，内存，I/O等进行共享。</p>
+<p>SMP能够保证内存一致性，但这些共享的资源很可能成为性能瓶颈，随着CPU数量的增加，每个CPU都要访问相同的内存资源，可能导致内存访问冲突，</p>
+<p>可能会导致CPU资源的浪费。常用的PC机就属于这种。</p>
+<p>CLHLock的实现:</p>
+<pre><code class="language-java">public class CLHLock implements Lock {
+    AtomicReference&lt;QNode&gt; tail ;
+    ThreadLocal&lt;QNode&gt; myPred;
+    ThreadLocal&lt;QNode&gt; myNode;
+
+    public CLHLock() {
+
+         tail = new AtomicReference&lt;QNode&gt;(new QNode());
+        myNode = new ThreadLocal&lt;QNode&gt;() {
+            protected QNode initialValue() {
+                return new QNode();
+            }
+        };
+        myPred = new ThreadLocal&lt;QNode&gt;() {
+            protected QNode initialValue() {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public void lock() {
+        QNode qnode = myNode.get();
+        qnode.locked = true;
+        QNode pred = tail.getAndSet(qnode);
+        myPred.set(pred);
+        while (pred.locked) {
+        }
+    }
+
+    @Override
+    public void unlock() {
+        QNode qnode = myNode.get();
+        qnode.locked = false;
+        myNode.set(myPred.get());
+    }
+}
+</code></pre>
+<p>CLH队列锁的优点是空间复杂度低（如果有n个线程，L个锁，每个线程每次只获取一个锁，那么需要的存储空间是O（L+n），n个线程有n个</p>
+<p>myNode，L个锁有L个tail），CLH的一种变体被应用在了JAVA并发框架中(AbstractQueuedSynchronizer.Node)。CLH在SMP系统结构下</p>
+<p>该法是非常有效的。但在NUMA系统结构下，每个线程有自己的内存，如果前趋结点的内存位置比较远，自旋判断前趋结点的locked域，性能</p>
+<p>将大打折扣，一种解决NUMA系统结构的思路是MCS队列锁。</p>
+<p><strong>UMA(Non-Uniform Memory Access)</strong></p>
+<p>非一致存储访问，将CPU分为CPU模块，每个CPU模块由多个CPU组成，并且具有独立的本地内存、I/O槽口等，模块之间可以通过互联模块相互访问，</p>
+<p>访问本地内存的速度将远远高于访问远地内存(系统内其它节点的内存)的速度，这也是非一致存储访问的由来。NUMA较好地解决SMP的扩展问题，</p>
+<p>当CPU数量增加时，因为访问远地内存的延时远远超过本地内存，系统性能无法线性增加。</p>
+<p>MCSlock的实现:</p>
+<pre><code class="language-java">public class MCSLock implements Lock {
+    AtomicReference&lt;QNode&gt; tail;
+    ThreadLocal&lt;QNode&gt; myNode;
+
+    @Override
+    public void lock() {
+        tail = new AtomicReference&lt;QNode&gt;(new QNode());
+        QNode qnode = myNode.get();
+        QNode pred = tail.getAndSet(qnode);
+        if (pred != null) {
+            qnode.locked = true;
+            pred.next = qnode;
+
+            // wait until predecessor gives up the lock
+            while (qnode.locked) {
+            }
+        }
+    }
+
+    @Override
+    public void unlock() {
+        QNode qnode = myNode.get();
+        if (qnode.next == null) {
+            if (tail.compareAndSet(qnode, null))
+                return;
+
+            // wait until predecessor fills in its next field
+            while (qnode.next == null) {
+            }
+        }
+        qnode.next.locked = false;
+        qnode.next = null;
+    }
+
+    class QNode {
+        boolean locked = false;
+        QNode next = null;
+    }
+}
+</code></pre>
+<p>MSC与CLH最大的不同并不是链表是显示还是隐式，而是线程自旋的规则不同:CLH是在前趋结点的locked域上自旋等待，而MCS是在自己的</p>
+<p>结点的locked域上自旋等待。正因为如此，它解决了CLH在NUMA系统架构中获取locked域状态内存过远的问题。</p>
+<h2 id="2-阻塞锁">2. 阻塞锁</h2>
+<p>阻塞锁，与自旋锁不同，改变了线程的运行状态。</p>
+<p>在JAVA环境中，线程Thread有如下几个状态：</p>
+<ol>
+<li>新建状态</li>
+<li>运行状态</li>
+<li>阻塞状态</li>
+<li>死亡状态</li>
+<li>死亡状态</li>
+</ol>
+<p>状态切换条件如下:</p>
+<figure data-type="image" tabindex="1"><img src="http://pic.92to.com/201709/19/111352960_1_20170919094943790.jpg" alt="" loading="lazy"></figure>
+<p>而阻塞锁，可以说是让线程进入阻塞状态进行等待，当获得相应的信号（唤醒，时间） 时，才可以进入线程的准备就绪状态，准备就绪状态的所有线程，通过竞争，进入运行状态。</p>
+<p>JAVA中，能够进入\退出、阻塞状态或包含阻塞锁的方法有 ，synchronized 关键字（其中的重量锁），ReentrantLock，Object.wait()\notify(),LockSupport.park()/unpart()(j.u.c经常使用)</p>
+<p>下面是一个JAVA 阻塞锁实例:</p>
+<pre><code class="language-java">package lock;
+
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.locks.LockSupport;
+
+public class CLHLock1 {
+    public static class CLHNode {
+        private volatile Thread isLocked;
+    }
+
+    @SuppressWarnings(&quot;unused&quot;)
+    private volatile CLHNode                                            tail;
+    private static final ThreadLocal&lt;CLHNode&gt;                           LOCAL   = new ThreadLocal&lt;CLHNode&gt;();
+    private static final AtomicReferenceFieldUpdater&lt;CLHLock1, CLHNode&gt; UPDATER = AtomicReferenceFieldUpdater.newUpdater(CLHLock1.class,
+                                                                                    CLHNode.class, &quot;tail&quot;);
+
+    public void lock() {
+        CLHNode node = new CLHNode();
+        LOCAL.set(node);
+        CLHNode preNode = UPDATER.getAndSet(this, node);
+        if (preNode != null) {
+            preNode.isLocked = Thread.currentThread();
+            LockSupport.park(this);
+            preNode = null;
+            LOCAL.set(node);
+        }
+    }
+
+    public void unlock() {
+        CLHNode node = LOCAL.get();
+        if (!UPDATER.compareAndSet(this, node, null)) {
+            System.out.println(&quot;unlock\t&quot; + node.isLocked.getName());
+            LockSupport.unpark(node.isLocked);
+        }
+        node = null;
+    }
+}
+</code></pre>
+<p>在这里我们使用了LockSupport.unpark()的阻塞锁。 该例子是将CLH锁修改而成。</p>
+<p>阻塞锁的优势在于，阻塞的线程不会占用cpu时间， 不会导致 CPu占用率过高，但进入时间以及恢复时间都要比自旋锁略慢,因为线程的上下文切换都有一定的开销</p>
+<p>使用阻塞锁的条件:</p>
+<ul>
+<li>
+<p>在竞争激烈的情况下 阻塞锁的性能要明显高于 自旋锁</p>
+</li>
+<li>
+<p>理想的情况则是; 在线程竞争不激烈的情况下，使用自旋锁，竞争激烈的情况下使用，阻塞锁。</p>
+</li>
+</ul>
+<h2 id="3-可重入锁">3. 可重入锁</h2>
+<p>这里讲的是广义上的可重入锁，而不是单指JAVA下的ReentrantLock。</p>
+<p>可重入锁，也叫做递归锁，指的是同一线程 外层函数获得锁之后 ，内层递归函数仍然有获取该锁的代码，但不受影响。</p>
+<p>换句话说,可重入锁指的是在<strong>同一个线程</strong>中可以多次获取<strong>同一把锁</strong></p>
+<p>在JAVA环境下 ReentrantLock 和synchronized 都是可重入锁</p>
+<p>下面是使用实例：</p>
+<pre><code class="language-java">public class Test implements Runnable{
+
+	public synchronized void get(){
+		System.out.println(Thread.currentThread().getId());
+		set();
+	}
+
+	public synchronized void set(){
+		System.out.println(Thread.currentThread().getId());
+	}
+
+	@Override
+	public void run() {
+		get();
+	}
+	public static void main(String[] args) {
+		Test ss=new Test();
+		new Thread(ss).start();
+		new Thread(ss).start();
+		new Thread(ss).start();
+	}
+}
+</code></pre>
+<p>基于synchronized的可重入</p>
+<pre><code class="language-java">public class Test implements Runnable {
+	ReentrantLock lock = new ReentrantLock();
+
+	public void get() {
+		lock.lock();
+		System.out.println(Thread.currentThread().getId());
+		set();
+		lock.unlock();
+	}
+
+	public void set() {
+		lock.lock();
+		System.out.println(Thread.currentThread().getId());
+		lock.unlock();
+	}
+
+	@Override
+	public void run() {
+		get();
+	}
+
+	public static void main(String[] args) {
+		Test ss = new Test();
+		new Thread(ss).start();
+		new Thread(ss).start();
+		new Thread(ss).start();
+	}
+}
+</code></pre>
+<p>基于ReentrantLock的可重入</p>
+<p>为什么需要设计可重入锁呢？</p>
+<p><strong>注意:</strong></p>
+<p>可重入锁最大的作用是避免死锁</p>
+<p>如果synchronized是不可重入的,我们看下面的代码:</p>
+<pre><code class="language-java">public class Widget{
+    public synchronized void doSomething(){
+       //TODO
+    }
+}
+public class LoggingWidget extends Widget{
+    public synchronized void doSomething(){
+        super.doSomething();
+    }
+}
+</code></pre>
+<p>在上面程序中，子类改写了父类的 synchronized 方法，然后调用父类中的方法，此时如果内置锁不是可重入的，那么这段代码将产生死锁。由于 Widget 和 LoggingWidget 中 doSomething 方法都是 synchronized 方法，因此每个每个 doSomething 方法在执行前都会获取 Widget 上的锁。然而如果内置锁不是可重入的，那么调用 super.doSomething( )时无法获得 Widget 上的锁，因为这个锁已经被持有，从而线程将永远停顿下去，等待一个永远也无法获得的锁。重入则避免了这种死锁情况的发生。</p>
+<h2 id="4-读写锁">4. 读写锁</h2>
+<p>相比Java中的锁(Locks in Java)里Lock实现，读写锁更复杂一些。假设你的程序中涉及到对一些共享资源的读和写操作，且写操作没有读操作那么频繁。在没有写操作的时候，两个线程同时读一个资源没有任何问题，所以应该允许多个线程能在同时读取共享资源。但是如果有一个线程想去写这些共享资源，就不应该再有其它线程对该资源进行读或写。这就需要一个读/写锁来解决这个问题。</p>
+<p>Java5在java.util.concurrent包中已经包含了读写锁—ReentrantReadWriteLock</p>
+<p>ReentrantReadWriteLock的锁策略有两种:</p>
+<ol>
+<li>公平读写锁</li>
+<li>非公平读写锁</li>
+</ol>
+<p>两者有些小区别，为便于理解，本小节将以示例的形式来说明多线程下，使用公平策略的读写锁是如何处理的。</p>
+<p><strong>公平读写锁</strong></p>
+<p>首先看一下即将出场的伙伴们，我们一共会出场几个线程，还有用于实现读写机制的AQS同步器队列。每个线程中的 R(0)W(0)表示当前线程占用了多少读写锁。</p>
+<figure data-type="image" tabindex="2"><img src="http://img.blog.csdn.net/20160904214427704" alt="" loading="lazy"></figure>
+<p>接下来，我们一步步来看在公平策略下多线程并发的读写机制是怎样的。</p>
+<ol>
+<li>线程A请求一个读锁，此时无人竞争锁，A获取读锁1，即线程A重入次数为1，如下所示：</li>
+</ol>
+<figure data-type="image" tabindex="3"><img src="http://img.blog.csdn.net/20160904214455816" alt="" loading="lazy"></figure>
+<ol start="2">
+<li>线程B请求一个读锁，由于AQS中没有等待节点，当前处于读锁占有状态(线程A占有1个读锁)，所以B成功获取读锁，如下所示：</li>
+</ol>
+<figure data-type="image" tabindex="4"><img src="http://img.blog.csdn.net/20160904214624801" alt="" loading="lazy"></figure>
+<ol start="3">
+<li>这时候，线程C请求一个写锁，由于当前其他两个线程拥有读锁，写锁获取失败，线程C入队列，如下所示：</li>
+</ol>
+<figure data-type="image" tabindex="5"><img src="http://img.blog.csdn.net/20160904214636551" alt="" loading="lazy"></figure>
+<p>AQS初始化会创建一个空的头节点，C入队列，然后会休眠，等待其他线程释放锁唤醒。</p>
+<ol start="4">
+<li>线程D也来了，线程D想获取一个读锁，虽然当于处于读锁占有阶段，但是目前D不占有任何数量的读锁，而且同步器队列中已经有等待节点，这时候，由于公平策略，D不得已，一个字，等，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="6"><img src="http://img.blog.csdn.net/20160904214654613" alt="" loading="lazy"></figure>
+<ol start="5">
+<li>这时候，线程A执行完了，释放了读锁，由于B仍然占有读锁，所以释放后读锁仍然没有完全释放，写锁仍然没有机会执行，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="7"><img src="http://img.blog.csdn.net/20160904214706442" alt="" loading="lazy"></figure>
+<ol start="6">
+<li>这次，B也执行完了，执行完后，读锁全部释放，这时候会唤醒排在同步器队头的节点C，C成功获取一个写锁，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="8"><img src="http://img.blog.csdn.net/20160904214722817" alt="" loading="lazy"></figure>
+<ol start="7">
+<li>一旦任何一个线程获取了写锁，除了该线程自己，其它线程都将无法获取读锁和写锁，这时候，线程C再次请求一个读锁，这是允许的，但反过来如果一个线程先获取了读锁，再获取写法则是不行的。这时候的状态如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="9"><img src="http://img.blog.csdn.net/20160904214740614" alt="" loading="lazy"></figure>
+<ol start="8">
+<li>这时候假设线程E也来了，E想获取读锁，由于当前处于写锁状态，直接入队，如下所示：</li>
+</ol>
+<figure data-type="image" tabindex="10"><img src="http://img.blog.csdn.net/20160904214750114" alt="" loading="lazy"></figure>
+<ol start="9">
+<li>这会C终于把活干完了，把读锁和写锁都给释放了，然后线程D被唤醒，获取了读锁，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="11"><img src="http://img.blog.csdn.net/20160904214800317" alt="" loading="lazy"></figure>
+<ol start="10">
+<li>这时候，如果再来一个线程，比如A，也想获取读锁，由于节点中还有线程E在等待，而且当前线程A没有获取任何读锁，不是重入状态，所以只能置入队尾，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="12"><img src="http://img.blog.csdn.net/20160904214813271" alt="" loading="lazy"></figure>
+<ol start="11">
+<li>这时候，如果D再次调用了一次获取读锁，由于D属于可重入状态，所以直接把读锁+1即可，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="13"><img src="http://img.blog.csdn.net/20160904214822536" alt="" loading="lazy"></figure>
+<p>12 .由于D获取的是读锁，同步队列中的E等待的也是读锁，所以E会被唤醒，获取读锁继续执行，如下图所示：</p>
+<figure data-type="image" tabindex="14"><img src="http://img.blog.csdn.net/20160904214833083" alt="" loading="lazy"></figure>
+<ol start="13">
+<li>同样的，由于线程A获取的是读锁，在E执行后，会唤醒线程A，A也可以获得读锁，并继续执行，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="15"><img src="http://img.blog.csdn.net/20160904214843569" alt="" loading="lazy"></figure>
+<p>14.最后大家各自执行，悄然退场。</p>
+<p><strong>非公平读写锁</strong></p>
+<p>b. 如果当前全局处于读锁状态，且队列中没有等待线程，则当前线程获取读锁</p>
+<p>c. 如果当前全局处于写锁占用状态（并且不是当前线程占有），则当前线程入队尾</p>
+<p>d. 如果当前全局处于读锁状态，且等待队列中第一个等待线程想获取写锁，那么当前线程能够获取到读锁的条件为：当前线程获取了写锁，还未释放；当前线程获取了读锁，这一次只是重入读锁而已；其它情况当前线程入队尾。之所以这样处理一方面是为了效率，一方面是为了避免想获取写锁的线程饥饿，老是得不到执行的机会</p>
+<p>e. 如果当前全局处于读锁状态，且等待队列中第一个等待线程不是写锁，则当前线程可以抢占读锁</p>
+<p>获取写锁相对就比较简单了，规则如下：</p>
+<p>h. 如果当前处于无锁状态，则当前线程获取写锁</p>
+<p>i. 如果当前全局处于读锁状态，当前线程入队尾</p>
+<p>j. 如果当前全局处于写锁状态，除非是重入获取写锁，否则入队尾</p>
+<p>接下来我们看一遍流程：</p>
+<ol>
+<li>线程A请求一个读锁，全局处于无锁状态，根据规则a，线程A获取了锁，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="16"><img src="http://img.blog.csdn.net/20160904214907570" alt="" loading="lazy"></figure>
+<ol start="2">
+<li>线程B请求一个读锁，根据规则b，线程B可以获取到读锁</li>
+</ol>
+<figure data-type="image" tabindex="17"><img src="http://img.blog.csdn.net/20160904214916195" alt="" loading="lazy"></figure>
+<ol start="3">
+<li>这时候，线程C请求一个写锁，由于当前其他两个线程拥有读锁，写锁获取失败，线程C入队列(根据规则i)，如下所示：</li>
+</ol>
+<figure data-type="image" tabindex="18"><img src="http://img.blog.csdn.net/20160904214925521" alt="" loading="lazy"></figure>
+<p>AQS初始化会创建一个空的头节点，C入队列，然后会休眠，等待其他线程释放锁唤醒。</p>
+<ol start="4">
+<li>线程D也来了，线程D想获取一个读锁，根据读锁规则d，队列中第一个等待线程C请求的是写锁，为避免写锁迟迟获取不到，并且线程D不是重入获取读锁，所以线程D也入队，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="19"><img src="http://img.blog.csdn.net/20160904214945256" alt="" loading="lazy"></figure>
+<ol start="5">
+<li>这时候，线程A执行完了，释放了读锁，由于B仍然占有读锁，所以释放后读锁仍然没有完全释放，写锁仍然没有机会执行，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="20"><img src="http://img.blog.csdn.net/20160904214953256" alt="" loading="lazy"></figure>
+<ol start="6">
+<li>这次，B也执行完了，执行完后，读锁全部释放，这时候会唤醒排在同步器队头的节点C，C成功获取一个写锁，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="21"><img src="http://img.blog.csdn.net/20160904215002009" alt="" loading="lazy"></figure>
+<ol start="7">
+<li>一旦任何一个线程获取了写锁，除了该线程自己，其它线程都将无法获取读锁和写锁，这时候，线程C再次请求一个读锁，这是允许的，但反过来如果一个线程先获取了读锁，再获取写锁则是不行的。这时候的状态如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="22"><img src="http://img.blog.csdn.net/20160904215011756" alt="" loading="lazy"></figure>
+<ol start="8">
+<li>这时候假设线程E也来了，E想获取读锁，由于当前处于写锁状态，直接入队，如下所示：</li>
+</ol>
+<figure data-type="image" tabindex="23"><img src="http://img.blog.csdn.net/20160904215020869" alt="" loading="lazy"></figure>
+<ol start="9">
+<li>这会C终于把活干完了，把读锁和写锁都给释放了，然后线程D被唤醒，获取了读锁，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="24"><img src="http://img.blog.csdn.net/20160904215028634" alt="" loading="lazy"></figure>
+<ol start="10">
+<li>这时候，如果再来一个线程，比如A，也想获取读锁，虽然等待队列中，E线程刚好还没被唤醒，但A线程是可以抢占读锁的(这里假设抢占到了)，这个跟公平锁有明显的区别，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="25"><img src="http://img.blog.csdn.net/20160904215036932" alt="" loading="lazy"></figure>
+<ol start="11">
+<li>这时候，如果D再次调用了一次获取读锁，由于D属于可重入状态，所以直接把读锁+1即可，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="26"><img src="http://img.blog.csdn.net/20160904215044963" alt="" loading="lazy"></figure>
+<ol start="12">
+<li>由于当前状态下处于读锁状态，前面的线程D其实醒来后，是会同时唤醒线程E的，所以线程E也醒过来继续干活了，如下图所示：</li>
+</ol>
+<figure data-type="image" tabindex="27"><img src="http://img.blog.csdn.net/20160904215052760" alt="" loading="lazy"></figure>
+<ol start="13">
+<li>同步队列中没有等待线程了，各个线程执行完后，一切相安无事了。</li>
+</ol>
+<p><strong>总结</strong></p>
+<p>考虑到业务的多样化，java5中提供的并发包中的工具类大部分都同时提供了公平及非公平策略，这两种策略下，一般而言，非公平锁吞吐会比较大，所以默认情况下都是使用的非公平策略。</p>
+<h2 id="5-互斥锁">5. 互斥锁</h2>
+<p>所谓互斥锁, 指的是一次最多只能有一个线程持有的锁. 在jdk1.5之前, 我们通常使用synchronized机制控制多个线程对共享资源的访问. 而现在, Lock提供了比synchronized机制更广泛的锁定操作, Lock和synchronized机制的主要区别:</p>
+<ul>
+<li>synchronized机制提供了对与每个对象相关的隐式监视器锁的访问, 并强制所有锁获取和释放均要出现在一个块结构中, 当获取了多个锁时, 它们必须以相反的顺序释放. synchronized机制对锁的释放是隐式的, 只要线程运行的代码超出了synchronized语句块范围, 锁就会被释放</li>
+<li>Lock机制必须显式的调用Lock对象的unlock()方法才能释放锁, 这为获取锁和释放锁不出现在同一个块结构中, 以及以更自由的顺序释放锁提供了可能</li>
+</ul>
+<p>互斥锁在java中的实现就是 ReetranLock , 在访问一个同步资源时，它的对象需要通过方法 tryLock() 获得这个锁，如果失败，返回 false，成功返回true。根据返回的信息来判断是否要访问这个被同步的资源。</p>
+<pre><code class="language-java">public class LockTest {
+    private static Lock lock = new ReentrantLock();
+    public static void main(String[] args) {
+        try{
+          lock.lock();
+          invokeMethod();
+    }finally {
+             // 释放锁
+             lock.unlock();
+     }
+
+    private static void invokeMethod() {
+        //TODO
+    }
+}
+</code></pre>
+<h2 id="6-悲观锁与乐观锁">6. 悲观锁与乐观锁</h2>
+<ul>
+<li>
+<p>悲观锁：总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。再比如Java里面的同步原语synchronized关键字的实现也是悲观锁。</p>
+</li>
+<li>
+<p>乐观锁：顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库提供的类似于write_condition机制，其实都是提供的乐观锁。在Java中java.util.concurrent.atomic包下面的原子变量类就是使用了乐观锁的一种实现方式CAS实现的。</p>
+</li>
+</ul>
+<h2 id="7-公平锁与非公平锁">7. 公平锁与非公平锁</h2>
+<ul>
+<li>
+<p>公平锁：某个对象的锁对所有线程都是公平的，先到先得。每次加锁前都会检查队列里面有没有排队等待的线程，没有才会尝试获取锁。</p>
+</li>
+<li>
+<p>非公平锁：当一个线程采用非公平锁这种方式获取锁时，该线程会首先去尝试获取锁而不是等待。如果没有后去成功，那么它才会去队列里面等待。</p>
+</li>
+</ul>
+<p>ReentrantLock默认的lock()方法采用的是非公平锁；</p>
+<h2 id="8-偏向锁">8. 偏向锁</h2>
+<p>Java偏向锁(Biased Locking)是Java6引入的一项多线程优化。它通过消除资源无竞争情况下的同步原语，进一步提高了程序的运行性能。</p>
+<p>偏向锁，顾名思义，它会偏向于第一个访问锁的线程，如果在接下来的运行过程中，该锁没有被其他的线程访问，则持有偏向锁的线程将永远不需要触发同步。</p>
+<p>如果在运行过程中，遇到了其他线程抢占锁，则持有偏向锁的线程会被挂起，JVM会尝试消除它身上的偏向锁，将锁恢复到标准的轻量级锁。(偏向锁只能在单线程下起作用)</p>
+<p>因此 流程是这样的 偏向锁-&gt;轻量级锁-&gt;重量级锁</p>
+<h2 id="9-方法锁-对象锁-类锁">9. 方法锁、对象锁、类锁</h2>
+<p>首先说明一下：方法锁和对象锁说的是一个东西，即只有方法锁或对象锁 和类锁两种锁</p>
+<p>synchronized<br>
+在修饰代码块的时候需要一个reference对象作为锁的对象.</p>
+<p>在修饰方法的时候默认是当前对象作为锁的对象.</p>
+<p>在修饰类时候默认是当前类的Class对象作为锁的对象.</p>
+<p>线程同步的方法：sychronized、lock、reentrantLock分析<br>
+方法锁（synchronized修饰方法时）</p>
+<h2 id="总结">总结</h2>
+<p>常见锁的区别及适用场景：</p>
+<ul>
+<li>互斥锁：mutex，用于保证在任何时刻，都只能有一个线程访问该对象。当获取锁操作失败时，线程会进入睡眠，等待锁释放时被唤醒</li>
+<li>自旋锁：spinlock，在任何时刻同样只能有一个线程访问对象。但是当获取锁操作失败时，不会进入睡眠，而是会在原地自旋，直到锁被释放。这样节省了线程从睡眠状态到被唤醒期间的消耗，在加锁时间短暂的环境下会极大的提高效率。但如果加锁时间过长，则会非常浪费CPU资源</li>
+<li>读写锁：rwlock，区分读和写，处于读操作时，可以允许多个线程同时获得读操作。但是同一时刻只能有一个线程可以获得写锁。其它获取写锁失败的线程都会进入睡眠状态，直到写锁释放时被唤醒。</li>
+<li>信号量：semaphore，是用于线程间同步的，当一个线程完成操作后就通过信号量通知其它线程，然后别的线程就可以继续进行某些操作了。</li>
+<li>RCU: 即read-copy-update，在修改数据时，首先需要读取数据，然后生成一个副本，对副本进行修改。修改完成后，再将老数据update成新的数据。使用RCU时，读者几乎不需要同步开销，既不需要获得锁，也不使用原子指令，不会导致锁竞争，因此就不用考虑死锁问题了。而对于写者的同步开销较大，它需要复制被修改的数据，还必须使用锁机制同步并行其它写者的修改操作。在有大量读操作，少量写操作的情况下效率非常高</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.zhihu.com/question/38857029/answer/78480263">自旋锁和使线程休眠的非自旋锁各有什么适用场景？</a></li>
+<li><a href="http://www.importnew.com/19472.html">Java中的锁</a></li>
+<li><a href="http://blog.csdn.net/zqz_zqz/article/details/70233767">java 中的锁 -- 偏向锁、轻量级锁、自旋锁、重量级锁</a></li>
+<li><a href="https://www.cnblogs.com/wangyayun/p/6593446.html">浅谈对java中锁的理解</a></li>
+<li><a href="http://blog.csdn.net/testcs_dn/article/details/43305831">大并发下的高性能编程 – 改进的（用户态）自旋锁</a></li>
+<li><a href="http://blog.csdn.net/iter_zc/article/details/40373881">聊聊高并发（六）实现几种自旋锁（一）</a></li>
+<li><a href="https://www.cnblogs.com/yuyutianxia/p/4296220.html">CLH锁 、MCS锁</a></li>
+<li><a href="http://ifeve.com/java_lock_see3/">Java锁的种类以及辨析（三）：阻塞锁</a></li>
+<li><a href="https://www.zhihu.com/question/23284564">java的可重入锁用在哪些场合？</a></li>
+<li><a href="http://ifeve.com/read-write-locks/">Java中的读/写锁</a></li>
+<li><a href="http://blog.csdn.net/yanyan19880509/article/details/52435135">轻松掌握java读写锁(ReentrantReadWriteLock)的实现原理</a></li>
+<li><a href="http://blog.csdn.net/crazylzxlzx/article/details/52200865">方法锁，对象锁，类锁区别</a></li>
+<li><a href="http://blog.csdn.net/u012658346/article/details/51188116">常见锁的区别及适用场景</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E9%94%81%E7%9A%84%E7%A7%8D%E7%B1%BB">锁的种类</a></li>
+<li><a href="#1-%E8%87%AA%E6%97%8B%E9%94%81spin-lock">1. 自旋锁(spin lock)</a></li>
+<li><a href="#2-%E9%98%BB%E5%A1%9E%E9%94%81">2. 阻塞锁</a></li>
+<li><a href="#3-%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81">3. 可重入锁</a></li>
+<li><a href="#4-%E8%AF%BB%E5%86%99%E9%94%81">4. 读写锁</a></li>
+<li><a href="#5-%E4%BA%92%E6%96%A5%E9%94%81">5. 互斥锁</a></li>
+<li><a href="#6-%E6%82%B2%E8%A7%82%E9%94%81%E4%B8%8E%E4%B9%90%E8%A7%82%E9%94%81">6. 悲观锁与乐观锁</a></li>
+<li><a href="#7-%E5%85%AC%E5%B9%B3%E9%94%81%E4%B8%8E%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81">7. 公平锁与非公平锁</a></li>
+<li><a href="#8-%E5%81%8F%E5%90%91%E9%94%81">8. 偏向锁</a></li>
+<li><a href="#9-%E6%96%B9%E6%B3%95%E9%94%81-%E5%AF%B9%E8%B1%A1%E9%94%81-%E7%B1%BB%E9%94%81">9. 方法锁、对象锁、类锁</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/2016-nian-du-shou-cang-hao-wen/">
+              <h3 class="post-title">
+                2016年度收藏好文
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

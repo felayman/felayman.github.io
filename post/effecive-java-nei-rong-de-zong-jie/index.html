@@ -1,0 +1,336 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Effecive Java内容的总结 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Effecive Java内容的总结 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+Effecive Java内容的总结
+
+创建和销毁对象
+
+
+考虑用静态工厂方法替代构造器
+优点
+
+有名称,如果构造器的参数本身没有确切地的描述正被返回的对象,那么具有适当名称的静态工厂方法会更容易使用,产生的客户端代码更容易阅读
+不用每次..." />
+    <meta name="keywords" content="Java" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Effecive Java内容的总结
+            </h2>
+            <div class="post-info">
+              <span>
+                2015-06-07
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Java/" class="post-tag">
+                  # Java
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>Effecive Java内容的总结</p>
+</blockquote>
+<h2 id="创建和销毁对象">创建和销毁对象</h2>
+<ol>
+<li>
+<p>考虑用静态工厂方法替代构造器</p>
+<p><strong>优点</strong></p>
+<ol>
+<li>有名称,如果构造器的参数本身没有确切地的描述正被返回的对象,那么具有适当名称的静态工厂方法会更容易使用,产生的客户端代码更容易阅读</li>
+<li>不用每次调用的时候都创建一个新的对象实例,比如单实例的对象</li>
+<li>它可以返回原来返回类型的任何子类型对象</li>
+</ol>
+<p><strong>缺点</strong></p>
+<ol>
+<li>类如果没有共有的或者受保护的构造器,就不能被子类化</li>
+<li>与其他的静态方法实际上没有任何区别</li>
+</ol>
+<p><strong>常用静态工厂方法的命名规范</strong></p>
+<ol>
+<li>valueOf()</li>
+<li>of()</li>
+<li>getInstance()</li>
+<li>newInstance()</li>
+<li>getType()</li>
+<li>newType()</li>
+</ol>
+<p><strong>静态方法和构造器共同的局限性</strong></p>
+<ol>
+<li>不能很好的扩展到大量的可选参数,比如某个对象有n个字段,如果每个组合都需要考虑,则有n!(n的阶乘)个构造器,n越大,构造器越多</li>
+</ol>
+</li>
+<li>
+<p>遇到多个构造器参数时要考虑构造器(模式)</p>
+</li>
+<li>
+<p>用私有构造器或者枚举来强化Singleton属性</p>
+</li>
+<li>
+<p>通过私有构造器强化不可实例化的能力</p>
+</li>
+<li>
+<p>避免创建不必要的对象</p>
+</li>
+<li>
+<p>消除过期的对象引用</p>
+</li>
+<li>
+<p>避免使用终结方法</p>
+</li>
+</ol>
+<h2 id="所有对象的通用方法">所有对象的通用方法</h2>
+<ol>
+<li>覆盖equals时请遵循通用约定</li>
+<li>覆盖equals时总要覆盖hashcode</li>
+<li>始终要覆盖toString</li>
+<li>谨慎地覆盖clone</li>
+<li>考虑实现Compareable</li>
+</ol>
+<h2 id="类和接口">类和接口</h2>
+<ol>
+<li>使类和成员的可访问小最小化</li>
+<li>在共有类中使用访问访问而非公有域</li>
+<li>使可变现最小化</li>
+<li>复合优先于继承</li>
+<li>要么为继承而设计,并提供文档说明,要么就禁止</li>
+<li>接口优于抽象类</li>
+<li>类层次优于标签类</li>
+<li>用函数对象表示策略</li>
+<li>优先考虑静态成员类</li>
+</ol>
+<h2 id="泛型">泛型</h2>
+<ol>
+<li>请不要再新代码中使用原生态类型</li>
+<li>消除非受检警告</li>
+<li>列表优于数组</li>
+<li>优先考虑泛型</li>
+<li>优先考虑泛型方法</li>
+<li>利用有限制通配符来提升API的灵活性</li>
+<li>优先考虑类型安全的异构容器</li>
+</ol>
+<h2 id="枚举和注解">枚举和注解</h2>
+<ol>
+<li>用enum代替int常量</li>
+<li>用实例域代理序数</li>
+<li>用EnumSet代替位域</li>
+<li>用EnumMap代替序数索引</li>
+<li>用节课模拟可伸缩性的枚举</li>
+<li>注解优先于命名模式</li>
+<li>坚持使用Override注解</li>
+<li>用标记接口的定义类型</li>
+</ol>
+<h2 id="方法">方法</h2>
+<ol>
+<li>检查参数的有效性</li>
+<li>必要时候进行保护性拷贝</li>
+<li>谨慎设计方法签名</li>
+<li>慎用重载</li>
+<li>返回零长度的数组或者集合,而不是null</li>
+<li>为所有导出的API元素编写文档注释</li>
+</ol>
+<h2 id="通用程序设计">通用程序设计</h2>
+<ol>
+<li>将局部变量的作用于最小化</li>
+<li>for-each循环优于传统的for循环</li>
+<li>了解和使用类库</li>
+<li>如果需要精确的答案,请避免使用float和double</li>
+<li>基本类型优于装箱基本类型</li>
+<li>如果其他类型更合适,则尽量避免使用字符串</li>
+<li>当心字符串连接的性能</li>
+<li>通过接口引用对象</li>
+<li>接口优先于反射机制</li>
+<li>谨慎地使用本地方法</li>
+<li>谨慎地进行优化</li>
+<li>遵循普遍接受的命名惯例</li>
+</ol>
+<h2 id="异常">异常</h2>
+<ol>
+<li>只针对异常的情况才使用异常</li>
+<li>对可恢复的情况使用受检异常,对编程错误使用运行时异常</li>
+<li>避免不必要地使用受检的异常</li>
+<li>优先使用标准的异常</li>
+<li>抛出与抽象相对应的异常</li>
+<li>每个方法抛出的异常都要有文档</li>
+<li>在细节消息中包含能捕获失败的信息</li>
+<li>努力使失败保持原子性</li>
+<li>不要忽略异常</li>
+</ol>
+<h2 id="并发">并发</h2>
+<ol>
+<li>同步访问共享的可变数据</li>
+<li>避免过度同步</li>
+<li>executor和task优先于线程</li>
+<li>并发工具优先于wait和notify</li>
+<li>线程安全性的文档化</li>
+<li>慎用延迟初始化</li>
+<li>不要依赖于线程调度器</li>
+<li>避免使用线程组</li>
+</ol>
+<h2 id="序列化">序列化</h2>
+<ol>
+<li>谨慎地实现Serializable接口</li>
+<li>考虑使用自定义的序列化形式</li>
+<li>保护性地编写readObject方法</li>
+<li>对于实例控制,枚举类型有限readResolve</li>
+<li>考虑用序列化代理替代序列化实例</li>
+</ol>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%88%9B%E5%BB%BA%E5%92%8C%E9%94%80%E6%AF%81%E5%AF%B9%E8%B1%A1">创建和销毁对象</a></li>
+<li><a href="#%E6%89%80%E6%9C%89%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95">所有对象的通用方法</a></li>
+<li><a href="#%E7%B1%BB%E5%92%8C%E6%8E%A5%E5%8F%A3">类和接口</a></li>
+<li><a href="#%E6%B3%9B%E5%9E%8B">泛型</a></li>
+<li><a href="#%E6%9E%9A%E4%B8%BE%E5%92%8C%E6%B3%A8%E8%A7%A3">枚举和注解</a></li>
+<li><a href="#%E6%96%B9%E6%B3%95">方法</a></li>
+<li><a href="#%E9%80%9A%E7%94%A8%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1">通用程序设计</a></li>
+<li><a href="#%E5%BC%82%E5%B8%B8">异常</a></li>
+<li><a href="#%E5%B9%B6%E5%8F%91">并发</a></li>
+<li><a href="#%E5%BA%8F%E5%88%97%E5%8C%96">序列化</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

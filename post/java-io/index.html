@@ -1,0 +1,484 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java IO | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java IO | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+相对各种开源框架进行深入学习和了解,则Java IO是必须要进行深入了解的,本文则集大家之成,来描述Java IO的大家族.
+
+前言
+我们将带着下面的问题来系统性的学习Java IO框架
+
+Java为什么要设计IO系统?
+Java I/O..." />
+    <meta name="keywords" content="java集合源码分析" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java IO
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-04-02
+              </span>
+              <span>
+                14 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/java集合源码分析/" class="post-tag">
+                  # java集合源码分析
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>相对各种开源框架进行深入学习和了解,则Java IO是必须要进行深入了解的,本文则集大家之成,来描述Java IO的大家族.</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>我们将带着下面的问题来系统性的学习Java IO框架</p>
+<ol>
+<li>Java为什么要设计IO系统?</li>
+<li>Java I/O演进之路</li>
+<li>为什么会出现NIO?</li>
+<li>为什么又出现AIO?</li>
+<li>看优秀开源框架如何使用NIO/AIO编程,如Netty,Tomcat</li>
+<li>使用原生的NIO/AIO还是Netty,Mina?</li>
+</ol>
+<h2 id="术语">术语</h2>
+<blockquote>
+<p>同步IO和异步IO的区别就在于：数据拷贝的时候进程是否阻塞！　阻塞IO和非阻塞IO的区别就在于：应用程序的调用是否立即返回！</p>
+</blockquote>
+<h3 id="同步">同步</h3>
+<p>所谓同步，就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。也就是必须一件一件事做,等前一件做完了才能做下一件事</p>
+<p>例如普通B/S模式（同步）：提交请求-&gt;等待服务器处理-&gt;处理完毕返回 这个期间客户端浏览器不能干任何事</p>
+<h3 id="异步">异步</h3>
+<p>异步的概念和同步相对。当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者。</p>
+<p>例如 ajax请求（异步）: 请求通过事件触发-&gt;服务器处理（这是浏览器仍然可以作其他事情）-&gt;处理完毕</p>
+<h3 id="阻塞">阻塞</h3>
+<p>阻塞调用是指调用结果返回之前，当前线程会被挂起（线程进入非可执行状态，在这个状态下，cpu不会给线程分配时间片，即线程暂停运行）。函数只有在得到结果之后才会返回。</p>
+<p>###　非阻塞</p>
+<p>非阻塞和阻塞的概念相对应，指在不能立刻得到结果之前，该函数不会阻塞当前线程，而会立刻返回。</p>
+<h3 id="io模型">IO模型</h3>
+<ul>
+<li>阻塞IO模型</li>
+</ul>
+<p>进程会一直阻塞，直到数据拷贝完成</p>
+<ul>
+<li>非阻塞IO模型</li>
+</ul>
+<p>非阻塞IO通过进程反复调用IO函数（多次系统调用，并马上返回）；在数据拷贝的过程中，进程是阻塞的；</p>
+<ul>
+<li>IO复用模型</li>
+</ul>
+<p>主要是select和epoll；对一个IO端口，两次调用，两次返回，比阻塞IO并没有什么优越性；关键是能实现同时对多个IO端口进行监听；</p>
+<ul>
+<li>信号驱动IO</li>
+</ul>
+<p>两次调用，两次返回；</p>
+<ul>
+<li>异步IO模型</li>
+</ul>
+<p>数据拷贝的时候进程无需阻塞。</p>
+<p>前四种都是同步，只有最后一种才是异步IO。</p>
+<p>注:</p>
+<blockquote>
+<p>关于每种IO模型的具体实现,会在后文逐渐介绍,如果想直接了解,请参考<a href="https://blog.csdn.net/jay900323/article/details/18141217">Linux五种IO模型性能分析</a></p>
+</blockquote>
+<h2 id="正文">正文</h2>
+<h3 id="1-java为什么要设计io系统">1. Java为什么要设计IO系统?</h3>
+<p>Java 的IO系统解决的主要问题是系统IO模块和Java Heap区域间的数据通信,Java的设计者最开始使用&quot;流&quot;的概念来设计Java的IO系统,</p>
+<p>流(stream)的概念源于UNIX中管道(pipe)的概念。在UNIX中，管道是一条不间断的字节流，用来实现程序或进程间的通信，或读写外围设备、外部文件等。</p>
+<p>一个流，必有源端和目的端，它们可以是计算机内存的某些区域，也可以是磁盘文件，甚至可以是Internet上的某个URL。</p>
+<p>流的方向是重要的，根据流的方向，流可分为两类：输入流和输出流。用户可以从输入流中读取信息，但不能写它。相反，对输出流，只能往输入流写，而不能读它。</p>
+<p>对于Java而言,数据从Java Heap传输到IO模块则称之为输出流,相反则称之为输入流(输入输出的概念是针对于Java Heap而言,数据流入Java Heap则是输入流,反之为输出流)</p>
+<figure data-type="image" tabindex="1"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io1.png" alt="" loading="lazy"></figure>
+<p>不同的数据载体在Java IO中有不同的对象来进行抽象,入下图:</p>
+<figure data-type="image" tabindex="2"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io2.png" alt="" loading="lazy"></figure>
+<p>我们通过上图可以看出,Java IO对输入/输出流的抽象是镜像的,这也为后来的NIO的Channel的引入提供了非常好的先天条件.</p>
+<p>不同的抽象对于Java来说, 用&quot;适配&quot;一词更为合适, 对于整个IO体系,从宏观上看,其实就是针对不同的数据载体进行适配,从设计模式上来看,是很典型的适配器模式</p>
+<p>下面我们来看看Java IO的演进之路,在这个方向上我们可以很清晰的了解到不同阶段的Java IO系统的设计的优缺点</p>
+<h3 id="2-java-io演进之路">2. Java I/O演进之路</h3>
+<h4 id="jdk10">JDK1.0</h4>
+<h5 id="1-类库设计">1. 类库设计</h5>
+<p>在JDK1.0中, Java IO的传输抽象核心是&quot;字节&quot;,即Java的设计者认为从Java Heap 到 &quot;数据载体&quot;间的数据传输是通过字节来完成的,这个设想本身是非常好的,<br>
+但同时也过于抽象</p>
+<p>关于输入流的设计大概如下:</p>
+<figure data-type="image" tabindex="3"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io3.png" alt="" loading="lazy"></figure>
+<p>下面是IO中输入字节流的继承图:</p>
+<ul>
+<li>InputStream
+<ul>
+<li>ByteArrayInputStream</li>
+<li>FileInputStream</li>
+<li>FilterInputStream
+<ul>
+<li>BufferedInputStream</li>
+<li>DataInputStream</li>
+<li>LineNumberInputStream</li>
+<li>PushbackInputStream</li>
+</ul>
+</li>
+<li>ObjectInputStream</li>
+<li>PipedInputStream</li>
+<li>SequenceInputStream</li>
+<li>StringBufferInputStream</li>
+</ul>
+</li>
+</ul>
+<p>在上面的关系图中可以看出：</p>
+<ul>
+<li>InputStream是所有的输入字节流的父类，它是一个抽象类</li>
+<li>ByteArrayInputStream、StringBufferInputStream、FileInputStream是三种基本的介质流，它们分别将Byte数组、StringBuffer、和本地文件中读取数据。PipedInputStream是从与其它线程共用的管道中读取数据，与Piped相关的知识会用专门的一小节讲解</li>
+<li>ObjectInputStream和所有FilterInputStream的子类都是装饰流（装饰器模式的主角）。下表列出了这些流的功能及如何使用它们（具体使用在讲解完装饰器模式后会举几个例子）</li>
+</ul>
+<p>关于输出流的设计大概如下:</p>
+<figure data-type="image" tabindex="4"><img src="https://felayman.oss-cn-beijing.aliyuncs.com/IO%E6%BA%90%E7%A0%81/io4.png" alt="" loading="lazy"></figure>
+<p>下面是IO中输入字节流的继承图:</p>
+<ul>
+<li>OutputStream
+<ul>
+<li>FilterOutputStream
+<ul>
+<li>BufferedOutputStream</li>
+<li>DataOutputStream</li>
+<li>PrintStream</li>
+</ul>
+</li>
+<li>ByteArrayOutputStream</li>
+<li>ObjectOutputStream</li>
+<li>PipedOutpuStream</li>
+<li>SequenceOutpuStream</li>
+</ul>
+</li>
+</ul>
+<p>因此在JDK1.0中,整个IO类库的设计大概入下:</p>
+<figure data-type="image" tabindex="5"><img src="http://processon.com/chart_image/5ac605ade4b00dc8a02ebc6c.png" alt="" loading="lazy"></figure>
+<h5 id="2设计细节">2.设计细节</h5>
+<p>我们从上面的类库可以看到,在JDK1.0中,两个核心的抽象类:InputStream和OutputStream</p>
+<p>其中InputStream是所有输入流的父类,OutputStream是所有输出流的父类,我们详细看看两个顶级父类,在JDK1.0中的IO系统中的核心抽象API</p>
+<p>InputStream的核心源码(基于JDK8,去除源码中的注释):</p>
+<pre><code class="language-java">public abstract class InputStream implements Closeable {
+      //用于skip方法，和skipBuffer相关
+      private static final int MAX_SKIP_BUFFER_SIZE = 2048;
+      //从输入流中读取下一个字节正常返回0-255，到达文件的末尾返回-1,请注意,该方法会阻塞
+      public abstract int read() throws IOException;
+      public int read(byte b[]) throws IOException {
+                return read(b, 0, b.length);
+            }
+      //将流中的数据读入放在byte数组的第off个位置先后的len个位置中,返回值为放入字节的个数
+      public int read(byte b[], int off, int len) throws IOException {
+                    if (b == null) {
+                        throw new NullPointerException();
+                    } else if (off &lt; 0 || len &lt; 0 || len &gt; b.length - off) {
+                        throw new IndexOutOfBoundsException();
+                    } else if (len == 0) {
+                        return 0;
+                    }
+            
+                    int c = read();
+                    if (c == -1) {
+                        return -1;
+                    }
+                    b[off] = (byte)c;
+            
+                    int i = 1;
+                    try {
+                        for (; i &lt; len ; i++) {
+                            c = read();
+                            if (c == -1) {
+                                break;
+                            }
+                            b[off + i] = (byte)c;
+                        }
+                    } catch (IOException ee) {
+                    }
+                    return i;
+                }
+      //表示要跳过的字节数目
+      public long skip(long n) throws IOException {
+      
+              long remaining = n;
+              int nr;
+      
+              if (n &lt;= 0) {
+                  return 0;
+              }
+      
+              int size = (int)Math.min(MAX_SKIP_BUFFER_SIZE, remaining);
+              byte[] skipBuffer = new byte[size];
+              while (remaining &gt; 0) {
+                  nr = read(skipBuffer, 0, (int)Math.min(size, remaining));
+                  if (nr &lt; 0) {
+                      break;
+                  }
+                  remaining -= nr;
+              }
+      
+              return n - remaining;
+          }
+       //查询流中还有多少可以读取的字节
+      public int available() throws IOException {
+              return 0;
+          }
+       //关闭当前流、同时释放与此流相关的资源
+      public void close() throws IOException {}
+       //在当前位置对流进行标记，必要的时候可以使用reset方法返回
+      public synchronized void mark(int readlimit) {}
+       //对mark过的流进行复位。只有当流支持mark时才可以使用此方法
+      public synchronized void reset() throws IOException {
+              throw new IOException(&quot;mark/reset not supported&quot;);
+          }
+       //markSupport可以查询当前流是否支持mark
+      public boolean markSupported() {
+               return false;
+           }
+                
+}
+</code></pre>
+<p>OutputStream的核心源码(基于JDK8,去除源码中的注释):</p>
+<pre><code class="language-java">public abstract class OutputStream implements Closeable, Flushable {
+     //将一个字节写入输出流,
+     public abstract void write(int b) throws IOException;
+     //将指定字节数组写入输出流
+      public void write(byte b[]) throws IOException {
+             write(b, 0, b.length);
+         }
+      //将指定字节数组截取部分长度写入输出流
+      public void write(byte b[], int off, int len) throws IOException {
+              if (b == null) {
+                  throw new NullPointerException();
+              } else if ((off &lt; 0) || (off &gt; b.length) || (len &lt; 0) ||
+                         ((off + len) &gt; b.length) || ((off + len) &lt; 0)) {
+                  throw new IndexOutOfBoundsException();
+              } else if (len == 0) {
+                  return;
+              }
+              for (int i = 0 ; i &lt; len ; i++) {
+                  write(b[off + i]);
+              }
+          }
+      //如果是带有缓冲区的输出流,则可以强制将缓冲区内的数组刷新到对应的输出流中
+      public void flush() throws IOException {}
+      //关闭输出流
+      public void close() throws IOException {}
+}
+</code></pre>
+<p>其实从InputStream和OutputStream的核心抽象API来看,其实就是定义了&quot;字节&quot;的基本读取API,即read和write方法,其子类无非是在此</p>
+<p>基础上进行了具体的实现,则下面看看都有哪些具体的实现,我们先来看InputStream</p>
+<p>| 类 |功能|如何构造/怎样使用|<br>
+| - | - |<br>
+| ByteArrayInputStream |	将内存中的Byte数组适配为一个InputStream。 |从内存中的Byte数组创建该对象（2种方法）一般作为数据源，会使用其它装饰流提供额外的功能，一般都建议加个缓冲功能。 |<br>
+| StringBufferInputStream | 将内存中的字符串适配为一个InputStream。 |从一个String对象创建该对象。底层的实现使用StringBuffer。该类被Deprecated。主要原因是StringBuffer不应该属于字节流，所以推荐使用StringReader。一般作为数据源，同样会使用其它装饰器提供额外的功能。 |<br>
+|FileInputStream | 最基本的文件输入流。主要用于从文件中读取信息。|通过一个代表文件路径的 String、File对象或者 FileDescriptor对象创建。一般作为数据源，同样会使用其它装饰器提供额外的功能。|<br>
+|PipedInputStream |读取从对应PipedOutputStream写入的数据。在流中实现了管道的概念。 |利用对应的PipedOutputStream创建。在多线程程序中作为数据源，同样会使用其它装饰器提供额外的功能。|<br>
+|SequenceInputStream | 将2个或者多个InputStream 对象转变为一个InputStream. |使用两个InputStream 或者内部对象为InputStream 的Enumeration对象创建该对象。一般作为数据源，同样会使用其它装饰器提供额外的功能。|<br>
+|DataInputStream | 一般和DataOutputStream配对使用,完成基本数据类型的读写。 |利用一个InputStream构造。提供了大量的读取基本数据类新的读取方法。|<br>
+|BufferedInputStream | 使用该对象阻止每次读取一个字节都会频繁操作IO。将字节读取一个缓存区，从缓存区读取。|利用一个InputStream、或者带上一个自定义的缓存区的大小构造。使用InputStream的方法读取，只是背后多一个缓存的功能。设计模式中透明装饰器的应用。|<br>
+|LineNumberInputStream |跟踪输入流中的行号。可以调用getLineNumber( )和 setLineNumber(int)方法得到和设置行号。 |利用一个InputStream构造紧紧增加一个行号。可以象使用其它InputStream一样使用。|<br>
+|PushbackInputStream | 可以在读取最后一个byte 后将其放回到缓存中。 |利用一个InputStream构造。一般仅仅会在设计compiler的scanner 时会用到这个类。在我们的java语言的编译器中使用它。很多程序员可能一辈子都不需要。|</p>
+<p>我们再看看OutputStream</p>
+<p>| 类 |功能|如何构造/怎样使用|<br>
+| - | - |<br>
+| ByteArrayOutputStream |	在内存中创建一个buffer。所有写入此流中的数据都被放入到此buffer中。 |无参或者使用一个可选的初始化buffer的大小的参数构造。一般将其和FilterOutputStream套接得到额外的功能。建议首先和BufferedOutputStream套接实现缓冲功能。通过toByteArray方法可以得到流中的数据。（不通明装饰器的用法） |<br>
+| FileOutputStream | 将信息写入文件中。 |使用代表文件路径的String、File对象或者 FileDescriptor对象创建。还可以加一个代表写入的方式是否为append的标记。一般将其和FilterOutputStream套接得到额外的功能。 |<br>
+|PipedOutputStream | 任何写入此对象的信息都被放入对应PipedInputStream 对象的缓存中，从而完成线程的通信，实现了“管道”的概念。具体在后面详细讲解。|利用PipedInputStream构造.在多线程程序中数据的目的地的。一般将其和FilterOutputStream套接得到额外的功能。|<br>
+|DataOutputStream |通常和DataInputStream配合使用，使用它可以写入基本数据类新。 |使用OutputStream构造.包含大量的写入基本数据类型的方法。|<br>
+|PrintStream | 产生具有格式的输出信息。（一般地在java程序中DataOutputStream用于数据的存储，即J2EE中持久层完成的功能，PrintStream完成显示的功能，类似于J2EE中表现层的功能）|使用OutputStream和一个可选的表示缓存是否在每次换行时是否flush的标记构造。还提供很多和文件相关的构造方法。一般是一个终极（“final”）的包装器，很多时候我们都使用它！|<br>
+|BufferedOutputStream |	使用它可以避免频繁地向IO写入数据，数据一般都写入一个缓存区，在调用flush方法后会清空缓存、一次完成数据的写入 |从一个OutputStream或者和一个代表缓存区大小的可选参数构造。提供和其它OutputStream一致的接口，只是内部提供一个缓存的功能。|</p>
+<h3 id="3-为什么会出现nio">3. 为什么会出现NIO?</h3>
+<h3 id="4-为什么又出现aio">4. 为什么又出现AIO?</h3>
+<h3 id="5-看优秀开源框架如何使用nioaio编程如nettytomcat">5. 看优秀开源框架如何使用NIO/AIO编程,如Netty,Tomcat</h3>
+<h3 id="6-使用原生的nioaio还是nettymina">6. 使用原生的NIO/AIO还是Netty,Mina?</h3>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.jianshu.com/p/c4d3ef8004a7">从设计者的角度理解Java IO流</a></li>
+<li><a href="https://www.cnblogs.com/Joanna-Yan/p/7419117.html">Java IO编程全解（一）——Java的I/O演进之路</a></li>
+<li><a href="https://blog.csdn.net/jijianshuai/article/details/77450746">IO、NIO、AIO 内部原理分析</a></li>
+<li><a href="https://blog.csdn.net/nbrremix/article/details/7352232">Java aio(异步网络IO)初探</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-lo-javaio/index.html">深入分析 Java I/O 的工作机制</a></li>
+<li><a href="https://blog.csdn.net/jianghuxiaojin/article/details/52073031">java-IO-基本概念</a></li>
+<li><a href="https://blog.csdn.net/baobeisimple/article/details/1713797">Java IO完全总结（转载）</a></li>
+<li><a href="https://blog.csdn.net/huangwenyi1010/article/details/75577091?ref=myread">Java之IO,BIO,NIO,AIO知多少？</a></li>
+<li><a href="https://blog.csdn.net/jay900323/article/details/18141217">Linux五种IO模型性能分析</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E6%9C%AF%E8%AF%AD">术语</a>
+<ul>
+<li><a href="#%E5%90%8C%E6%AD%A5">同步</a></li>
+<li><a href="#%E5%BC%82%E6%AD%A5">异步</a></li>
+<li><a href="#%E9%98%BB%E5%A1%9E">阻塞</a></li>
+<li><a href="#io%E6%A8%A1%E5%9E%8B">IO模型</a></li>
+</ul>
+</li>
+<li><a href="#%E6%AD%A3%E6%96%87">正文</a>
+<ul>
+<li><a href="#1-java%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1io%E7%B3%BB%E7%BB%9F">1. Java为什么要设计IO系统?</a></li>
+<li><a href="#2-java-io%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF">2. Java I/O演进之路</a>
+<ul>
+<li><a href="#jdk10">JDK1.0</a>
+<ul>
+<li><a href="#1-%E7%B1%BB%E5%BA%93%E8%AE%BE%E8%AE%A1">1. 类库设计</a></li>
+<li><a href="#2%E8%AE%BE%E8%AE%A1%E7%BB%86%E8%8A%82">2.设计细节</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%87%BA%E7%8E%B0nio">3. 为什么会出现NIO?</a></li>
+<li><a href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%88%E5%87%BA%E7%8E%B0aio">4. 为什么又出现AIO?</a></li>
+<li><a href="#5-%E7%9C%8B%E4%BC%98%E7%A7%80%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8nioaio%E7%BC%96%E7%A8%8B%E5%A6%82nettytomcat">5. 看优秀开源框架如何使用NIO/AIO编程,如Netty,Tomcat</a></li>
+<li><a href="#6-%E4%BD%BF%E7%94%A8%E5%8E%9F%E7%94%9F%E7%9A%84nioaio%E8%BF%98%E6%98%AFnettymina">6. 使用原生的NIO/AIO还是Netty,Mina?</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/liang-ge-li-bai-de-hang-zhou-mian-shi-zhi-lu-zong-jie/">
+              <h3 class="post-title">
+                两个礼拜的杭州面试之旅总结
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

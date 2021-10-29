@@ -1,0 +1,345 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java工具集—jinfo | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java工具集—jinfo | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+jinfo（Configuration Info for Java）的作用是实时地查看和调整虚拟机各项参数。使用jps命令的-v参数可以查看虚拟机启动时显式指定的参数列表，但如果想知道未被显式指定的参数的系统默认值，除了去找资料外，就只能..." />
+    <meta name="keywords" content="Java工具" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java工具集—jinfo
+            </h2>
+            <div class="post-info">
+              <span>
+                2017-01-05
+              </span>
+              <span>
+                9 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Java工具/" class="post-tag">
+                  # Java工具
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>jinfo（Configuration Info for Java）的作用是实时地查看和调整虚拟机各项参数。使用jps命令的-v参数可以查看虚拟机启动时显式指定的参数列表，但如果想知道未被显式指定的参数的系统默认值，除了去找资料外，就只能使用jinfo的-flag选项进行查询了</p>
+</blockquote>
+<h2 id="用法摘要">用法摘要</h2>
+<p>#指定进程号(pid)的进程<br>
+jinfo [ option ] pid</p>
+<p>#指定核心文件<br>
+jinfo [ option ] &lt;executable <core></p>
+<p>#指定远程调试服务器<br>
+jinfo [ option ] [server-id@]<remote-hostname-or-IP></p>
+<h2 id="选项">选项</h2>
+<ol>
+<li>-flags</li>
+</ol>
+<p>用于查看jvm的参数,后面需加参数,如 jinfo -flags [进程ID]</p>
+<ol start="2">
+<li>-sysprops</li>
+</ol>
+<p>用于查看系统参数,后面需加参数,如 jinfo -sysprops [进程ID]</p>
+<ol start="3">
+<li>-h 或 -help</li>
+</ol>
+<p>用户查看命令帮助,后面无需加参数,如 jinfo -h 或 jinfo -help</p>
+<h2 id="参数">参数</h2>
+<ol>
+<li>pid</li>
+</ol>
+<p>选项参数是互斥的(不可同时使用)。想要使用选项参数，直接跟在命令名称后即可</p>
+<ol start="2">
+<li>executable</li>
+</ol>
+<p>产生核心dump的Java可执行文件。</p>
+<ol start="3">
+<li>core</li>
+</ol>
+<p>需要打印配置信息的核心文件。</p>
+<ol start="4">
+<li>remote-hostname-or-IP</li>
+</ol>
+<p>远程调试服务器的(请查看jsadebugd)主机名或IP地址</p>
+<ol start="5">
+<li>server-id</li>
+</ol>
+<p>可选的唯一id，如果相同的远程主机上运行了多台调试服务器，用此选项参数标识服务器。</p>
+<h2 id="使用例子">使用例子</h2>
+<p><strong>1.  查看某个java进程的jvm参数</strong></p>
+<p>jinfo -flags 6637</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 bin]# jinfo -flags 6637
+Attaching to process ID 6637, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.40-b25
+Non-default VM flags: -XX:CICompilerCount=3 -XX:CMSInitiatingOccupancyFraction=75 -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:InitialHeapSize=268435456 -XX:MaxHeapSize=1073741824 -XX:MaxNewSize=348913664 -XX:MaxTenuringThreshold=6 -XX:MinHeapDeltaBytes=196608 -XX:NewSize=89456640 -XX:OldPLABSize=16 -XX:OldSize=178978816 -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
+Command line:  -Xms256m -Xmx1g -Djava.awt.headless=true -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -Dfile.encoding=UTF-8 -Delasticsearch -Des.path.home=/data/1/usr/local/applications/test-elasticsearch
+</code></pre>
+<p><strong>2. 查看某个java进程的系统属性</strong></p>
+<p>jinfo -sysprops 6637</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 bin]# jinfo -sysprops 6637
+Attaching to process ID 6637, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.40-b25
+java.runtime.name = Java(TM) SE Runtime Environment
+elasticsearch =
+java.vm.version = 25.40-b25
+sun.boot.library.path = /opt/jdk1.8.0_40/jre/lib/amd64
+es.path.home = /data/1/usr/local/applications/test-elasticsearch
+java.vendor.url = http://java.oracle.com/
+java.vm.vendor = Oracle Corporation
+path.separator = :
+file.encoding.pkg = sun.io
+java.vm.name = Java HotSpot(TM) 64-Bit Server VM
+sun.os.patch.level = unknown
+sun.java.launcher = SUN_STANDARD
+user.country = US
+user.dir = /data/1/usr/local/applications/test-elasticsearch
+java.vm.specification.name = Java Virtual Machine Specification
+java.runtime.version = 1.8.0_40-b26
+java.awt.graphicsenv = sun.awt.X11GraphicsEnvironment
+os.arch = amd64
+java.endorsed.dirs = /opt/jdk1.8.0_40/jre/lib/endorsed
+line.separator =
+
+java.io.tmpdir = /tmp
+java.vm.specification.vendor = Oracle Corporation
+os.name = Linux
+sun.jnu.encoding = UTF-8
+java.library.path = /usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+sun.nio.ch.bugLevel =
+java.specification.name = Java Platform API Specification
+java.class.version = 52.0
+sun.management.compiler = HotSpot 64-Bit Tiered Compilers
+os.version = 2.6.32-573.12.1.el6.x86_64
+user.home = /root
+user.timezone = Asia/Harbin
+java.awt.printerjob = sun.print.PSPrinterJob
+file.encoding = UTF-8
+java.specification.version = 1.8
+es.logger.prefix =
+user.name = root
+java.class.path = :/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-1.5.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/groovy-all-2.4.0.jar:/data/1/usr/local/applications/test-elasticsearch/lib/commons-codec-1.6.jar:/data/1/usr/local/applications/test-elasticsearch/lib/jts-1.13.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-expressions-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-misc-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-spatial-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/asm-4.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-join-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-memory-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-highlighter-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/apache-log4j-extras-1.2.17.jar:/data/1/usr/local/applications/test-elasticsearch/lib/httpcore-4.3.2.jar:/data/1/usr/local/applications/test-elasticsearch/lib/log4j-1.2.17.jar:/data/1/usr/local/applications/test-elasticsearch/lib/spatial4j-0.4.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/jna-4.1.0.jar:/data/1/usr/local/applications/test-elasticsearch/lib/asm-commons-4.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-1.5.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-analyzers-common-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-suggest-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/antlr-runtime-3.5.jar:/data/1/usr/local/applications/test-elasticsearch/lib/httpclient-4.3.5.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-queries-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-analysis-ik-1.2.9.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-sandbox-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-queryparser-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-core-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-grouping-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/commons-logging-1.1.3.jar:/data/1/usr/local/applications/test-elasticsearch/lib/sigar/sigar-1.6.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/sigar/._sigar-1.6.4.jar
+java.vm.specification.version = 1.8
+sun.arch.data.model = 64
+sun.java.command = org.elasticsearch.bootstrap.Elasticsearch
+java.home = /opt/jdk1.8.0_40/jre
+user.language = en
+java.specification.vendor = Oracle Corporation
+awt.toolkit = sun.awt.X11.XToolkit
+java.vm.info = mixed mode
+java.version = 1.8.0_40
+java.ext.dirs = /opt/jdk1.8.0_40/jre/lib/ext:/usr/java/packages/lib/ext
+sun.boot.class.path = /opt/jdk1.8.0_40/jre/lib/resources.jar:/opt/jdk1.8.0_40/jre/lib/rt.jar:/opt/jdk1.8.0_40/jre/lib/sunrsasign.jar:/opt/jdk1.8.0_40/jre/lib/jsse.jar:/opt/jdk1.8.0_40/jre/lib/jce.jar:/opt/jdk1.8.0_40/jre/lib/charsets.jar:/opt/jdk1.8.0_40/jre/lib/jfr.jar:/opt/jdk1.8.0_40/jre/classes
+java.awt.headless = true
+java.vendor = Oracle Corporation
+file.separator = /
+java.vendor.url.bug = http://bugreport.sun.com/bugreport/
+sun.io.unicode.encoding = UnicodeLittle
+sun.cpu.endian = little
+sun.cpu.isalist =
+</code></pre>
+<p><strong>3. 查看某个JVM参数的信息</strong></p>
+<p>jinfo -flag MaxHeapSize 6637</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 bin]# jinfo -flag MaxHeapSize 6637
+-XX:MaxHeapSize=1073741824
+</code></pre>
+<p><strong>4. 动态修改JVM某个参数</strong></p>
+<p>注意：</p>
+<ol>
+<li>如果运行过程中，通过jinfo修改了，则修改后的值只能通过jinfo看到，jps是看不到的，jps命令只能看到启动时的jvm参数。</li>
+<li>很多运行参数是不能调整的，如果出现这种异常，说明不能调整：</li>
+</ol>
+<p>因此想要动态修改JVM某个参数,我们需要先知道哪些JVM参数是可以被动态修改的,通过如下命令可以知道</p>
+<p>java -XX:+PrintFlagsFinal -version|grep manageable</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 bin]# java -XX:+PrintFlagsFinal -version|grep manageable
+     intx CMSAbortablePrecleanWaitMillis            = 100                                 {manageable}
+     intx CMSTriggerInterval                        = -1                                  {manageable}
+     intx CMSWaitDuration                           = 2000                                {manageable}
+     bool HeapDumpAfterFullGC                       = false                               {manageable}
+     bool HeapDumpBeforeFullGC                      = false                               {manageable}
+     bool HeapDumpOnOutOfMemoryError                = false                               {manageable}
+    ccstr HeapDumpPath                              =                                     {manageable}
+    uintx MaxHeapFreeRatio                          = 100                                 {manageable}
+    uintx MinHeapFreeRatio                          = 0                                   {manageable}
+     bool PrintClassHistogram                       = false                               {manageable}
+     bool PrintClassHistogramAfterFullGC            = false                               {manageable}
+     bool PrintClassHistogramBeforeFullGC           = false                               {manageable}
+     bool PrintConcurrentLocks                      = false                               {manageable}
+     bool PrintGC                                   = false                               {manageable}
+     bool PrintGCDateStamps                         = false                               {manageable}
+     bool PrintGCDetails                            = false                               {manageable}
+     bool PrintGCID                                 = false                               {manageable}
+     bool PrintGCTimeStamps                         = false                               {manageable}
+java version &quot;1.8.0_40&quot;
+Java(TM) SE Runtime Environment (build 1.8.0_40-b26)
+Java HotSpot(TM) 64-Bit Server VM (build 25.40-b25, mixed mode)
+</code></pre>
+<p>我们此时看到PrintGC,PrintGCDetails,PrintGCTimeStamps参数都是false,我们通过jinfo来动态开启这些参数,如下</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 bin]# jinfo   -flag +PrintGC 6637
+[root@visualchina-dev-01 bin]# jinfo   -flag +PrintGCDetails 6637
+[root@visualchina-dev-01 bin]# jinfo   -flag +PrintGCTimeStamps 6637
+[root@visualchina-dev-01 bin]# jinfo   -flag +PrintGCDateStamps 6637
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E7%94%A8%E6%B3%95%E6%91%98%E8%A6%81">用法摘要</a></li>
+<li><a href="#%E9%80%89%E9%A1%B9">选项</a></li>
+<li><a href="#%E5%8F%82%E6%95%B0">参数</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E4%BE%8B%E5%AD%90">使用例子</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/java-gong-ju-ji-jcmd/">
+              <h3 class="post-title">
+                Java工具集—jcmd
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

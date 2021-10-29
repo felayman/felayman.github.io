@@ -1,0 +1,881 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java工具集—jcmd | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Java工具集—jcmd | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+在JDK 1.7之后，新增了一个命令行工具jcmd。它是一个多功能工具，可以用来导出堆，查看java进程，导出线程信息，执行GC等
+
+用法摘要
+jcmd没有提供远程方法方式，只能查看本地的jvm信息：
+jcmd &lt;pid | mai..." />
+    <meta name="keywords" content="Java工具" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java工具集—jcmd
+            </h2>
+            <div class="post-info">
+              <span>
+                2017-01-05
+              </span>
+              <span>
+                33 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Java工具/" class="post-tag">
+                  # Java工具
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>在JDK 1.7之后，新增了一个命令行工具jcmd。它是一个多功能工具，可以用来导出堆，查看java进程，导出线程信息，执行GC等</p>
+</blockquote>
+<h2 id="用法摘要">用法摘要</h2>
+<p>jcmd没有提供远程方法方式，只能查看本地的jvm信息：</p>
+<pre><code class="language-shell">jcmd &lt;pid | main class&gt; &lt;command ...|PerfCounter.print|-f file&gt;
+</code></pre>
+<h2 id="选项">选项</h2>
+<p>jcmd支持哪些选项，可以通过如下方式查看：</p>
+<ol>
+<li>通过jcmd查看本地的java进程列表，获取其pid</li>
+</ol>
+<p>jcmd</p>
+<p>如下:</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd
+6561 org.elasticsearch.bootstrap.Elasticsearch
+4963 mammuthus.master.ConfMaster
+19173 com.vcg.px500.aliyun.AliLogLauncher --spring.profiles.active=test
+19015 sun.tools.jcmd.JCmd
+5389 mammuthus.slave.ConfSlave
+6637 org.elasticsearch.bootstrap.Elasticsearch
+27632 com.vcg.web.SchedulerProcess
+11089 com.vcg.px500.bpm.BpmApplication
+15092 com.alibaba.dubbo.container.Main
+2196 org.apache.zookeeper.server.quorum.QuorumPeerMain /data/web/server/zookeeper-3.4.6/bin/../conf/zoo.cfg
+6488 com.vcg.px500.PageRenderLauncher --spring.profiles.active=test
+20185 com.vcg.VcGicApplication
+5849 org.codehaus.plexus.classworlds.launcher.Launcher exec:java -Dexec.mainClass=mammuthus.web.Launcher
+4989 com.vcg.px500.ElasticsearchServiceLauncher
+8830 com.vcg.discovery.DiscoveryApplication --spring.profiles.active=test
+</code></pre>
+<ol start="2">
+<li>通过jcmd pid help查看其支持的命令列表</li>
+</ol>
+<p>jcmd 19173 help</p>
+<p>结果如下:</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 19173 help
+19173:
+The following commands are available:
+JFR.stop
+JFR.start
+JFR.dump
+JFR.check
+VM.native_memory
+VM.check_commercial_features
+VM.unlock_commercial_features
+ManagementAgent.stop
+ManagementAgent.start_local
+ManagementAgent.start
+GC.rotate_log
+Thread.print
+GC.class_stats
+GC.class_histogram
+GC.heap_dump
+GC.run_finalization
+GC.run
+VM.uptime
+VM.flags
+VM.system_properties
+VM.command_line
+VM.version
+help
+
+For more information about a specific command use 'help &lt;command&gt;'.
+</code></pre>
+<ol start="3">
+<li>如果想查看命令的选项，比如想查看GC.class_stats命令选项，可以通过如下命令:</li>
+</ol>
+<p>jcmd 19173  VM.uptime</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 19173  VM.uptime
+19173:
+1164477.992 s
+</code></pre>
+<p><strong>常用命令</strong></p>
+<ol>
+<li>查看JVM进程的PID</li>
+</ol>
+<p>jcmd -l</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd -l
+6561 org.elasticsearch.bootstrap.Elasticsearch
+4963 mammuthus.master.ConfMaster
+19173 com.vcg.px500.aliyun.AliLogLauncher --spring.profiles.active=test
+5389 mammuthus.slave.ConfSlave
+6637 org.elasticsearch.bootstrap.Elasticsearch
+27632 com.vcg.web.SchedulerProcess
+9681 sun.tools.jcmd.JCmd -l
+11089 com.vcg.px500.bpm.BpmApplication
+15092 com.alibaba.dubbo.container.Main
+2196 org.apache.zookeeper.server.quorum.QuorumPeerMain /data/web/server/zookeeper-3.4.6/bin/../conf/zoo.cfg
+6488 com.vcg.px500.PageRenderLauncher --spring.profiles.active=test
+20185 com.vcg.VcGicApplication
+5849 org.codehaus.plexus.classworlds.launcher.Launcher exec:java -Dexec.mainClass=mammuthus.web.Launcher
+4989 com.vcg.px500.ElasticsearchServiceLauncher
+8830 com.vcg.discovery.DiscoveryApplication --spring.profiles.active=test
+</code></pre>
+<ol start="2">
+<li>查看进程6561的JVM参数</li>
+</ol>
+<p>jcmd 6561 VM.flags</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 6561 VM.flags
+6561:
+-XX:CICompilerCount=3 -XX:CMSInitiatingOccupancyFraction=75 -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:InitialHeapSize=268435456 -XX:MaxHeapSize=1073741824 -XX:MaxNewSize=348913664 -XX:MaxTenuringThreshold=6 -XX:MinHeapDeltaBytes=196608 -XX:NewSize=89456640 -XX:OldPLABSize=16 -XX:OldSize=178978816 -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
+</code></pre>
+<ol start="3">
+<li>获取所有性能相关数据PerfCounter.print</li>
+</ol>
+<p>jcmd 6561 PerfCounter.print</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 6561 PerfCounter.print
+6561:
+java.ci.totalTime=242379661085
+java.cls.loadedClasses=11912
+java.cls.sharedLoadedClasses=0
+java.cls.sharedUnloadedClasses=0
+java.cls.unloadedClasses=2775
+java.property.java.class.path=&quot;:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-1.5.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/groovy-all-2.4.0.jar:/data/1/usr/local/applications/test-elasticsearch/lib/commons-codec-1.6.jar:/data/1/usr/local/applications/test-elasticsearch/lib/jts-1.13.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-expressions-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-misc-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-spatial-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/asm-4.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-join-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-memory-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-highlighter-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/apache-log4j-extras-1.2.17.jar:/data/1/usr/local/applications/test-elasticsearch/lib/httpcore-4.3.2.jar:/data/1/usr/local/appl&quot;
+java.property.java.endorsed.dirs=&quot;/opt/jdk1.8.0_40/jre/lib/endorsed&quot;
+java.property.java.ext.dirs=&quot;/opt/jdk1.8.0_40/jre/lib/ext:/usr/java/packages/lib/ext&quot;
+java.property.java.home=&quot;/opt/jdk1.8.0_40/jre&quot;
+java.property.java.library.path=&quot;/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib&quot;
+java.property.java.version=&quot;1.8.0_40&quot;
+java.property.java.vm.info=&quot;mixed mode&quot;
+java.property.java.vm.name=&quot;Java HotSpot(TM) 64-Bit Server VM&quot;
+java.property.java.vm.specification.name=&quot;Java Virtual Machine Specification&quot;
+java.property.java.vm.specification.vendor=&quot;Oracle Corporation&quot;
+java.property.java.vm.specification.version=&quot;1.8&quot;
+java.property.java.vm.vendor=&quot;Oracle Corporation&quot;
+java.property.java.vm.version=&quot;25.40-b25&quot;
+java.rt.vmArgs=&quot;-Xms256m -Xmx1g -Djava.awt.headless=true -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -Dfile.encoding=UTF-8 -Delasticsearch -Des.path.home=/data/1/usr/local/applications/test-elasticsearch&quot;
+java.rt.vmFlags=&quot;&quot;
+java.threads.daemon=84
+java.threads.live=87
+java.threads.livePeak=93
+java.threads.started=61752
+sun.ci.compilerThread.0.compiles=3179
+sun.ci.compilerThread.0.method=&quot;&quot;
+sun.ci.compilerThread.0.time=17398395
+sun.ci.compilerThread.0.type=1
+sun.ci.compilerThread.1.compiles=3348
+sun.ci.compilerThread.1.method=&quot;&quot;
+sun.ci.compilerThread.1.time=9048582
+sun.ci.compilerThread.1.type=1
+sun.ci.compilerThread.2.compiles=16052
+sun.ci.compilerThread.2.method=&quot;&quot;
+sun.ci.compilerThread.2.time=14224384
+sun.ci.compilerThread.2.type=1
+sun.ci.lastFailedMethod=&quot;java/net/URLClassLoader$1 run&quot;
+sun.ci.lastFailedType=1
+sun.ci.lastInvalidatedMethod=&quot;&quot;
+sun.ci.lastInvalidatedType=0
+sun.ci.lastMethod=&quot;java/lang/ThreadGroup addUnstarted&quot;
+sun.ci.lastSize=40
+sun.ci.lastType=1
+sun.ci.nmethodCodeSize=51951264
+sun.ci.nmethodSize=101592784
+sun.ci.osrBytes=301813
+sun.ci.osrCompiles=352
+sun.ci.osrTime=13184662172
+sun.ci.standardBytes=6781040
+sun.ci.standardCompiles=22226
+sun.ci.standardTime=229194998913
+sun.ci.threads=3
+sun.ci.totalBailouts=1
+sun.ci.totalCompiles=22578
+sun.ci.totalInvalidates=0
+sun.classloader.findClassTime=4131261274
+sun.classloader.findClasses=7046
+sun.classloader.parentDelegationTime=337496146
+sun.cls.appClassBytes=33469961
+sun.cls.appClassLoadCount=7878
+sun.cls.appClassLoadTime=5273340538
+sun.cls.appClassLoadTime.self=3540259498
+sun.cls.classInitTime=1604436233
+sun.cls.classInitTime.self=731542892
+sun.cls.classLinkedTime=2858594350
+sun.cls.classLinkedTime.self=748099418
+sun.cls.classVerifyTime=2103774799
+sun.cls.classVerifyTime.self=815050548
+sun.cls.defineAppClassTime=1845930013
+sun.cls.defineAppClassTime.self=356638557
+sun.cls.defineAppClasses=9848
+sun.cls.initializedClasses=9266
+sun.cls.isUnsyncloadClassSet=0
+sun.cls.jniDefineClassNoLockCalls=19
+sun.cls.jvmDefineClassNoLockCalls=9846
+sun.cls.jvmFindLoadedClassNoLockCalls=61357
+sun.cls.linkedClasses=10194
+sun.cls.loadInstanceClassFailRate=0
+sun.cls.loadedBytes=21774336
+sun.cls.lookupSysClassTime=44307432
+sun.cls.methodBytes=8041297
+sun.cls.nonSystemLoaderLockContentionRate=0
+sun.cls.parseClassTime=1701917188
+sun.cls.parseClassTime.self=1373668904
+sun.cls.sharedClassLoadTime=2218873
+sun.cls.sharedLoadedBytes=0
+sun.cls.sharedUnloadedBytes=0
+sun.cls.sysClassBytes=7064455
+sun.cls.sysClassLoadTime=356439298
+sun.cls.systemLoaderLockContentionRate=0
+sun.cls.time=8052860228
+sun.cls.unloadedBytes=4408224
+sun.cls.unsafeDefineClassCalls=2872
+sun.cls.verifiedClasses=9992
+sun.gc.cause=&quot;No GC&quot;
+sun.gc.collector.0.invocations=366451
+sun.gc.collector.0.lastEntryTime=2530466724314329
+sun.gc.collector.0.lastExitTime=2530466730304404
+sun.gc.collector.0.name=&quot;PCopy&quot;
+sun.gc.collector.0.time=2532071823335
+sun.gc.collector.1.invocations=207546
+sun.gc.collector.1.lastEntryTime=2530475239035402
+sun.gc.collector.1.lastExitTime=2530475279844035
+sun.gc.collector.1.name=&quot;CMS&quot;
+sun.gc.collector.1.time=4810935527488
+sun.gc.compressedclassspace.capacity=6283264
+sun.gc.compressedclassspace.maxCapacity=1073741824
+sun.gc.compressedclassspace.minCapacity=0
+sun.gc.compressedclassspace.used=6117816
+sun.gc.generation.0.agetable.bytes.00=0
+sun.gc.generation.0.agetable.bytes.01=2334872
+sun.gc.generation.0.agetable.bytes.02=1172808
+sun.gc.generation.0.agetable.bytes.03=982976
+sun.gc.generation.0.agetable.bytes.04=3480
+sun.gc.generation.0.agetable.bytes.05=4104
+sun.gc.generation.0.agetable.bytes.06=4480
+sun.gc.generation.0.agetable.bytes.07=0
+sun.gc.generation.0.agetable.bytes.08=0
+sun.gc.generation.0.agetable.bytes.09=0
+sun.gc.generation.0.agetable.bytes.10=0
+sun.gc.generation.0.agetable.bytes.11=0
+sun.gc.generation.0.agetable.bytes.12=0
+sun.gc.generation.0.agetable.bytes.13=0
+sun.gc.generation.0.agetable.bytes.14=0
+sun.gc.generation.0.agetable.bytes.15=0
+sun.gc.generation.0.agetable.size=16
+sun.gc.generation.0.capacity=89456640
+sun.gc.generation.0.maxCapacity=348913664
+sun.gc.generation.0.minCapacity=89456640
+sun.gc.generation.0.name=&quot;new&quot;
+sun.gc.generation.0.space.0.capacity=71630848
+sun.gc.generation.0.space.0.initCapacity=0
+sun.gc.generation.0.space.0.maxCapacity=279183360
+sun.gc.generation.0.space.0.name=&quot;eden&quot;
+sun.gc.generation.0.space.0.used=57655848
+sun.gc.generation.0.space.1.capacity=8912896
+sun.gc.generation.0.space.1.initCapacity=0
+sun.gc.generation.0.space.1.maxCapacity=34865152
+sun.gc.generation.0.space.1.name=&quot;s0&quot;
+sun.gc.generation.0.space.1.used=0
+sun.gc.generation.0.space.2.capacity=8912896
+sun.gc.generation.0.space.2.initCapacity=0
+sun.gc.generation.0.space.2.maxCapacity=34865152
+sun.gc.generation.0.space.2.name=&quot;s1&quot;
+sun.gc.generation.0.space.2.used=5854832
+sun.gc.generation.0.spaces=3
+sun.gc.generation.0.threads=4
+sun.gc.generation.1.capacity=724828160
+sun.gc.generation.1.maxCapacity=724828160
+sun.gc.generation.1.minCapacity=178978816
+sun.gc.generation.1.name=&quot;old&quot;
+sun.gc.generation.1.space.0.capacity=724828160
+sun.gc.generation.1.space.0.initCapacity=178978816
+sun.gc.generation.1.space.0.maxCapacity=724828160
+sun.gc.generation.1.space.0.name=&quot;old&quot;
+sun.gc.generation.1.space.0.used=691175400
+sun.gc.generation.1.spaces=1
+sun.gc.lastCause=&quot;CMS Final Remark&quot;
+sun.gc.metaspace.capacity=57393152
+sun.gc.metaspace.maxCapacity=1126170624
+sun.gc.metaspace.minCapacity=0
+sun.gc.metaspace.used=56470080
+sun.gc.policy.collectors=2
+sun.gc.policy.desiredSurvivorSize=4456448
+sun.gc.policy.generations=3
+sun.gc.policy.maxTenuringThreshold=6
+sun.gc.policy.name=&quot;ParNew:CMS&quot;
+sun.gc.policy.tenuringThreshold=3
+sun.gc.tlab.alloc=8380443
+sun.gc.tlab.allocThreads=31
+sun.gc.tlab.fastWaste=0
+sun.gc.tlab.fills=774
+sun.gc.tlab.gcWaste=88417
+sun.gc.tlab.maxFastWaste=0
+sun.gc.tlab.maxFills=100
+sun.gc.tlab.maxGcWaste=59839
+sun.gc.tlab.maxSlowAlloc=55
+sun.gc.tlab.maxSlowWaste=14267
+sun.gc.tlab.slowAlloc=216
+sun.gc.tlab.slowWaste=30759
+sun.os.hrt.frequency=1000000000
+sun.os.hrt.ticks=2530477576073710
+sun.perfdata.majorVersion=2
+sun.perfdata.minorVersion=0
+sun.perfdata.overflow=0
+sun.perfdata.size=32768
+sun.perfdata.timestamp=80782301
+sun.perfdata.used=16392
+sun.property.sun.boot.class.path=&quot;/opt/jdk1.8.0_40/jre/lib/resources.jar:/opt/jdk1.8.0_40/jre/lib/rt.jar:/opt/jdk1.8.0_40/jre/lib/sunrsasign.jar:/opt/jdk1.8.0_40/jre/lib/jsse.jar:/opt/jdk1.8.0_40/jre/lib/jce.jar:/opt/jdk1.8.0_40/jre/lib/charsets.jar:/opt/jdk1.8.0_40/jre/lib/jfr.jar:/opt/jdk1.8.0_40/jre/classes&quot;
+sun.property.sun.boot.library.path=&quot;/opt/jdk1.8.0_40/jre/lib/amd64&quot;
+sun.rt._sync_ContendedLockAttempts=7285318
+sun.rt._sync_Deflations=1861505
+sun.rt._sync_EmptyNotifications=0
+sun.rt._sync_FailedSpins=0
+sun.rt._sync_FutileWakeups=1002124
+sun.rt._sync_Inflations=1861502
+sun.rt._sync_MonExtant=12544
+sun.rt._sync_MonInCirculation=0
+sun.rt._sync_MonScavenged=0
+sun.rt._sync_Notifications=759713
+sun.rt._sync_Parks=8023803
+sun.rt._sync_PrivateA=0
+sun.rt._sync_PrivateB=0
+sun.rt._sync_SlowEnter=0
+sun.rt._sync_SlowExit=0
+sun.rt._sync_SlowNotify=0
+sun.rt._sync_SlowNotifyAll=0
+sun.rt._sync_SuccessfulSpins=0
+sun.rt.applicationTime=2522622169876977
+sun.rt.createVmBeginTime=1513758614652
+sun.rt.createVmEndTime=1513758614722
+sun.rt.internalVersion=&quot;Java HotSpot(TM) 64-Bit Server VM (25.40-b25) for linux-amd64 JRE (1.8.0_40-b26), built on Mar  7 2015 15:08:31 by &quot;java_re&quot; with gcc 4.3.0 20080428 (Red Hat 4.3.0-8)&quot;
+sun.rt.interruptedBeforeIO=0
+sun.rt.interruptedDuringIO=0
+sun.rt.javaCommand=&quot;org.elasticsearch.bootstrap.Elasticsearch&quot;
+sun.rt.jvmCapabilities=&quot;1100000000000000000000000000000000000000000000000000000000000000&quot;
+sun.rt.jvmVersion=422051865
+sun.rt.safepointSyncTime=137301999739
+sun.rt.safepointTime=7853838180124
+sun.rt.safepoints=657523
+sun.rt.threadInterruptSignaled=0
+sun.rt.vmInitDoneTime=1513758614700
+sun.threads.vmOperationTime=7402514464005
+sun.urlClassLoader.readClassBytesTime=1410797775
+sun.zip.zipFile.openTime=6494940
+sun.zip.zipFiles=45
+[root@visualchina-dev-01 logs]# ^C
+[root@visualchina-dev-01 logs]# jcmd 6561 PerfCounter.print
+6561:
+PerfCounter.printjava.ci.totalTime=242379661085
+java.cls.loadedClasses=11912
+java.cls.sharedLoadedClasses=0
+java.cls.sharedUnloadedClasses=0
+java.cls.unloadedClasses=2775
+java.property.java.class.path=&quot;:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-1.5.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/groovy-all-2.4.0.jar:/data/1/usr/local/applications/test-elasticsearch/lib/commons-codec-1.6.jar:/data/1/usr/local/applications/test-elasticsearch/lib/jts-1.13.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-expressions-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-misc-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-spatial-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/asm-4.1.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-join-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-memory-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-highlighter-4.10.4.jar:/data/1/usr/local/applications/test-elasticsearch/lib/apache-log4j-extras-1.2.17.jar:/data/1/usr/local/applications/test-elasticsearch/lib/httpcore-4.3.2.jar:/data/1/usr/local/appl&quot;
+java.property.java.endorsed.dirs=&quot;/opt/jdk1.8.0_40/jre/lib/endorsed&quot;
+java.property.java.ext.dirs=&quot;/opt/jdk1.8.0_40/jre/lib/ext:/usr/java/packages/lib/ext&quot;
+java.property.java.home=&quot;/opt/jdk1.8.0_40/jre&quot;
+java.property.java.library.path=&quot;/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib&quot;
+java.property.java.version=&quot;1.8.0_40&quot;
+java.property.java.vm.info=&quot;mixed mode&quot;
+java.property.java.vm.name=&quot;Java HotSpot(TM) 64-Bit Server VM&quot;
+java.property.java.vm.specification.name=&quot;Java Virtual Machine Specification&quot;
+java.property.java.vm.specification.vendor=&quot;Oracle Corporation&quot;
+java.property.java.vm.specification.version=&quot;1.8&quot;
+java.property.java.vm.vendor=&quot;Oracle Corporation&quot;
+java.property.java.vm.version=&quot;25.40-b25&quot;
+java.rt.vmArgs=&quot;-Xms256m -Xmx1g -Djava.awt.headless=true -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -Dfile.encoding=UTF-8 -Delasticsearch -Des.path.home=/data/1/usr/local/applications/test-elasticsearch&quot;
+java.rt.vmFlags=&quot;&quot;
+java.threads.daemon=84
+java.threads.live=87
+java.threads.livePeak=93
+java.threads.started=61753
+sun.ci.compilerThread.0.compiles=3179
+sun.ci.compilerThread.0.method=&quot;&quot;
+sun.ci.compilerThread.0.time=17398395
+sun.ci.compilerThread.0.type=1
+sun.ci.compilerThread.1.compiles=3348
+sun.ci.compilerThread.1.method=&quot;&quot;
+sun.ci.compilerThread.1.time=9048582
+sun.ci.compilerThread.1.type=1
+sun.ci.compilerThread.2.compiles=16052
+sun.ci.compilerThread.2.method=&quot;&quot;
+sun.ci.compilerThread.2.time=14224384
+sun.ci.compilerThread.2.type=1
+sun.ci.lastFailedMethod=&quot;java/net/URLClassLoader$1 run&quot;
+sun.ci.lastFailedType=1
+sun.ci.lastInvalidatedMethod=&quot;&quot;
+sun.ci.lastInvalidatedType=0
+sun.ci.lastMethod=&quot;java/lang/ThreadGroup addUnstarted&quot;
+sun.ci.lastSize=40
+sun.ci.lastType=1
+sun.ci.nmethodCodeSize=51951264
+sun.ci.nmethodSize=101592784
+sun.ci.osrBytes=301813
+sun.ci.osrCompiles=352
+sun.ci.osrTime=13184662172
+sun.ci.standardBytes=6781040
+sun.ci.standardCompiles=22226
+sun.ci.standardTime=229194998913
+sun.ci.threads=3
+sun.ci.totalBailouts=1
+sun.ci.totalCompiles=22578
+sun.ci.totalInvalidates=0
+sun.classloader.findClassTime=4131261274
+sun.classloader.findClasses=7046
+sun.classloader.parentDelegationTime=337496146
+sun.cls.appClassBytes=33469961
+sun.cls.appClassLoadCount=7878
+sun.cls.appClassLoadTime=5273340538
+sun.cls.appClassLoadTime.self=3540259498
+sun.cls.classInitTime=1604436233
+sun.cls.classInitTime.self=731542892
+sun.cls.classLinkedTime=2858594350
+sun.cls.classLinkedTime.self=748099418
+sun.cls.classVerifyTime=2103774799
+sun.cls.classVerifyTime.self=815050548
+sun.cls.defineAppClassTime=1845930013
+sun.cls.defineAppClassTime.self=356638557
+sun.cls.defineAppClasses=9848
+sun.cls.initializedClasses=9266
+sun.cls.isUnsyncloadClassSet=0
+sun.cls.jniDefineClassNoLockCalls=19
+sun.cls.jvmDefineClassNoLockCalls=9846
+sun.cls.jvmFindLoadedClassNoLockCalls=61357
+sun.cls.linkedClasses=10194
+sun.cls.loadInstanceClassFailRate=0
+sun.cls.loadedBytes=21774336
+sun.cls.lookupSysClassTime=44307432
+sun.cls.methodBytes=8041297
+sun.cls.nonSystemLoaderLockContentionRate=0
+sun.cls.parseClassTime=1701917188
+sun.cls.parseClassTime.self=1373668904
+sun.cls.sharedClassLoadTime=2218873
+sun.cls.sharedLoadedBytes=0
+sun.cls.sharedUnloadedBytes=0
+sun.cls.sysClassBytes=7064455
+sun.cls.sysClassLoadTime=356439298
+sun.cls.systemLoaderLockContentionRate=0
+sun.cls.time=8052860228
+sun.cls.unloadedBytes=4408224
+sun.cls.unsafeDefineClassCalls=2872
+sun.cls.verifiedClasses=9992
+sun.gc.cause=&quot;No GC&quot;
+sun.gc.collector.0.invocations=366454
+sun.gc.collector.0.lastEntryTime=2530479580185231
+sun.gc.collector.0.lastExitTime=2530479585560933
+sun.gc.collector.0.name=&quot;PCopy&quot;
+sun.gc.collector.0.time=2532094987611
+sun.gc.collector.1.invocations=207549
+sun.gc.collector.1.lastEntryTime=2530481862636637
+sun.gc.collector.1.lastExitTime=2530481866221944
+sun.gc.collector.1.name=&quot;CMS&quot;
+sun.gc.collector.1.time=4810990927847
+sun.gc.compressedclassspace.capacity=6283264
+sun.gc.compressedclassspace.maxCapacity=1073741824
+sun.gc.compressedclassspace.minCapacity=0
+sun.gc.compressedclassspace.used=6117816
+sun.gc.generation.0.agetable.bytes.00=0
+sun.gc.generation.0.agetable.bytes.01=910232
+sun.gc.generation.0.agetable.bytes.02=1517616
+sun.gc.generation.0.agetable.bytes.03=1314880
+sun.gc.generation.0.agetable.bytes.04=641664
+sun.gc.generation.0.agetable.bytes.05=0
+sun.gc.generation.0.agetable.bytes.06=0
+sun.gc.generation.0.agetable.bytes.07=0
+sun.gc.generation.0.agetable.bytes.08=0
+sun.gc.generation.0.agetable.bytes.09=0
+sun.gc.generation.0.agetable.bytes.10=0
+sun.gc.generation.0.agetable.bytes.11=0
+sun.gc.generation.0.agetable.bytes.12=0
+sun.gc.generation.0.agetable.bytes.13=0
+sun.gc.generation.0.agetable.bytes.14=0
+sun.gc.generation.0.agetable.bytes.15=0
+sun.gc.generation.0.agetable.size=16
+sun.gc.generation.0.capacity=89456640
+sun.gc.generation.0.maxCapacity=348913664
+sun.gc.generation.0.minCapacity=89456640
+sun.gc.generation.0.name=&quot;new&quot;
+sun.gc.generation.0.space.0.capacity=71630848
+sun.gc.generation.0.space.0.initCapacity=0
+sun.gc.generation.0.space.0.maxCapacity=279183360
+sun.gc.generation.0.space.0.name=&quot;eden&quot;
+sun.gc.generation.0.space.0.used=3030360
+sun.gc.generation.0.space.1.capacity=8912896
+sun.gc.generation.0.space.1.initCapacity=0
+sun.gc.generation.0.space.1.maxCapacity=34865152
+sun.gc.generation.0.space.1.name=&quot;s0&quot;
+sun.gc.generation.0.space.1.used=6813448
+sun.gc.generation.0.space.2.capacity=8912896
+sun.gc.generation.0.space.2.initCapacity=0
+sun.gc.generation.0.space.2.maxCapacity=34865152
+sun.gc.generation.0.space.2.name=&quot;s1&quot;
+sun.gc.generation.0.space.2.used=0
+sun.gc.generation.0.spaces=3
+sun.gc.generation.0.threads=4
+sun.gc.generation.1.capacity=724828160
+sun.gc.generation.1.maxCapacity=724828160
+sun.gc.generation.1.minCapacity=178978816
+sun.gc.generation.1.name=&quot;old&quot;
+sun.gc.generation.1.space.0.capacity=724828160
+sun.gc.generation.1.space.0.initCapacity=178978816
+sun.gc.generation.1.space.0.maxCapacity=724828160
+sun.gc.generation.1.space.0.name=&quot;old&quot;
+sun.gc.generation.1.space.0.used=693361824
+sun.gc.generation.1.spaces=1
+sun.gc.lastCause=&quot;CMS Initial Mark&quot;
+sun.gc.metaspace.capacity=57393152
+sun.gc.metaspace.maxCapacity=1126170624
+sun.gc.metaspace.minCapacity=0
+sun.gc.metaspace.used=56470080
+sun.gc.policy.collectors=2
+sun.gc.policy.desiredSurvivorSize=4456448
+sun.gc.policy.generations=3
+sun.gc.policy.maxTenuringThreshold=6
+sun.gc.policy.name=&quot;ParNew:CMS&quot;
+sun.gc.policy.tenuringThreshold=6
+sun.gc.tlab.alloc=7900134
+sun.gc.tlab.allocThreads=2
+sun.gc.tlab.fastWaste=0
+sun.gc.tlab.fills=387
+sun.gc.tlab.gcWaste=759
+sun.gc.tlab.maxFastWaste=0
+sun.gc.tlab.maxFills=386
+sun.gc.tlab.maxGcWaste=501
+sun.gc.tlab.maxSlowAlloc=226
+sun.gc.tlab.maxSlowWaste=20105
+sun.gc.tlab.slowAlloc=226
+sun.gc.tlab.slowWaste=20105
+sun.os.hrt.frequency=1000000000
+sun.os.hrt.ticks=2530486895504959
+sun.perfdata.majorVersion=2
+sun.perfdata.minorVersion=0
+sun.perfdata.overflow=0
+sun.perfdata.size=32768
+sun.perfdata.timestamp=80782301
+sun.perfdata.used=16392
+sun.property.sun.boot.class.path=&quot;/opt/jdk1.8.0_40/jre/lib/resources.jar:/opt/jdk1.8.0_40/jre/lib/rt.jar:/opt/jdk1.8.0_40/jre/lib/sunrsasign.jar:/opt/jdk1.8.0_40/jre/lib/jsse.jar:/opt/jdk1.8.0_40/jre/lib/jce.jar:/opt/jdk1.8.0_40/jre/lib/charsets.jar:/opt/jdk1.8.0_40/jre/lib/jfr.jar:/opt/jdk1.8.0_40/jre/classes&quot;
+sun.property.sun.boot.library.path=&quot;/opt/jdk1.8.0_40/jre/lib/amd64&quot;
+sun.rt._sync_ContendedLockAttempts=7285318
+sun.rt._sync_Deflations=1861512
+sun.rt._sync_EmptyNotifications=0
+sun.rt._sync_FailedSpins=0
+sun.rt._sync_FutileWakeups=1002124
+sun.rt._sync_Inflations=1861502
+sun.rt._sync_MonExtant=12544
+sun.rt._sync_MonInCirculation=0
+sun.rt._sync_MonScavenged=0
+sun.rt._sync_Notifications=759719
+sun.rt._sync_Parks=8023809
+sun.rt._sync_PrivateA=0
+sun.rt._sync_PrivateB=0
+sun.rt._sync_SlowEnter=0
+sun.rt._sync_SlowExit=0
+sun.rt._sync_SlowNotify=0
+sun.rt._sync_SlowNotifyAll=0
+sun.rt._sync_SuccessfulSpins=0
+sun.rt.applicationTime=2522628672088533
+sun.rt.createVmBeginTime=1513758614652
+sun.rt.createVmEndTime=1513758614722
+sun.rt.internalVersion=&quot;Java HotSpot(TM) 64-Bit Server VM (25.40-b25) for linux-amd64 JRE (1.8.0_40-b26), built on Mar  7 2015 15:08:31 by &quot;java_re&quot; with gcc 4.3.0 20080428 (Red Hat 4.3.0-8)&quot;
+sun.rt.interruptedBeforeIO=0
+sun.rt.interruptedDuringIO=0
+sun.rt.javaCommand=&quot;org.elasticsearch.bootstrap.Elasticsearch&quot;
+sun.rt.jvmCapabilities=&quot;1100000000000000000000000000000000000000000000000000000000000000&quot;
+sun.rt.jvmVersion=422051865
+sun.rt.safepointSyncTime=137302595735
+sun.rt.safepointTime=7853922351270
+sun.rt.safepoints=657530
+sun.rt.threadInterruptSignaled=0
+sun.rt.vmInitDoneTime=1513758614700
+sun.threads.vmOperationTime=7402594168739
+sun.urlClassLoader.readClassBytesTime=1410797775
+sun.zip.zipFile.openTime=6494940
+sun.zip.zipFiles=45
+</code></pre>
+<ol start="4">
+<li>导出堆信息GC.heap_dump</li>
+</ol>
+<p>jcmd 6561 GC.heap_dump ./dump.txt</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 6561 GC.heap_dump ./dump.txt
+6561:
+Heap dump file created
+</code></pre>
+<ol start="5">
+<li>获取系统Properties内容VM.system_properties</li>
+</ol>
+<p>jcmd 6561 VM.system_properties</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 6561 VM.system_properties
+6561:
+#Thu Jan 18 23:28:19 CST 2018
+java.runtime.name=Java(TM) SE Runtime Environment
+elasticsearch=
+sun.boot.library.path=/opt/jdk1.8.0_40/jre/lib/amd64
+java.vm.version=25.40-b25
+es.path.home=/data/1/usr/local/applications/test-elasticsearch
+java.vm.vendor=Oracle Corporation
+java.vendor.url=http\://java.oracle.com/
+path.separator=\:
+java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+file.encoding.pkg=sun.io
+user.country=US
+sun.java.launcher=SUN_STANDARD
+sun.os.patch.level=unknown
+java.vm.specification.name=Java Virtual Machine Specification
+user.dir=/data/1/usr/local/applications/test-elasticsearch
+java.runtime.version=1.8.0_40-b26
+java.awt.graphicsenv=sun.awt.X11GraphicsEnvironment
+java.endorsed.dirs=/opt/jdk1.8.0_40/jre/lib/endorsed
+os.arch=amd64
+java.io.tmpdir=/tmp
+line.separator=\n
+java.vm.specification.vendor=Oracle Corporation
+os.name=Linux
+sun.jnu.encoding=UTF-8
+java.library.path=/usr/java/packages/lib/amd64\:/usr/lib64\:/lib64\:/lib\:/usr/lib
+sun.nio.ch.bugLevel=
+java.specification.name=Java Platform API Specification
+java.class.version=52.0
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+os.version=2.6.32-573.12.1.el6.x86_64
+user.home=/root
+user.timezone=Asia/Harbin
+java.awt.printerjob=sun.print.PSPrinterJob
+file.encoding=UTF-8
+java.specification.version=1.8
+es.logger.prefix=
+java.class.path=\:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-1.5.1.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/groovy-all-2.4.0.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/commons-codec-1.6.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/jts-1.13.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-expressions-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-misc-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-spatial-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/asm-4.1.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-join-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-memory-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-highlighter-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/apache-log4j-extras-1.2.17.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/httpcore-4.3.2.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/log4j-1.2.17.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/spatial4j-0.4.1.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/jna-4.1.0.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/asm-commons-4.1.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-1.5.1.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-analyzers-common-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-suggest-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/antlr-runtime-3.5.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/httpclient-4.3.5.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-queries-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/elasticsearch-analysis-ik-1.2.9.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-sandbox-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-queryparser-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-core-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/lucene-grouping-4.10.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/commons-logging-1.1.3.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/sigar/sigar-1.6.4.jar\:/data/1/usr/local/applications/test-elasticsearch/lib/sigar/._sigar-1.6.4.jar
+user.name=root
+java.vm.specification.version=1.8
+sun.java.command=org.elasticsearch.bootstrap.Elasticsearch
+java.home=/opt/jdk1.8.0_40/jre
+sun.arch.data.model=64
+user.language=en
+java.specification.vendor=Oracle Corporation
+awt.toolkit=sun.awt.X11.XToolkit
+java.vm.info=mixed mode
+java.version=1.8.0_40
+java.ext.dirs=/opt/jdk1.8.0_40/jre/lib/ext\:/usr/java/packages/lib/ext
+sun.boot.class.path=/opt/jdk1.8.0_40/jre/lib/resources.jar\:/opt/jdk1.8.0_40/jre/lib/rt.jar\:/opt/jdk1.8.0_40/jre/lib/sunrsasign.jar\:/opt/jdk1.8.0_40/jre/lib/jsse.jar\:/opt/jdk1.8.0_40/jre/lib/jce.jar\:/opt/jdk1.8.0_40/jre/lib/charsets.jar\:/opt/jdk1.8.0_40/jre/lib/jfr.jar\:/opt/jdk1.8.0_40/jre/classes
+java.awt.headless=true
+java.vendor=Oracle Corporation
+file.separator=/
+java.vendor.url.bug=http\://bugreport.sun.com/bugreport/
+sun.io.unicode.encoding=UnicodeLittle
+sun.cpu.endian=little
+sun.cpu.isalist=
+</code></pre>
+<ol start="6">
+<li>显示所有线程栈</li>
+</ol>
+<p>jcmd 6561 Thread.print | more</p>
+<pre><code class="language-shell">[root@visualchina-dev-01 logs]# jcmd 6561 Thread.print | more
+6561:
+2018-01-18 23:31:07
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.40-b25 mixed mode):
+
+&quot;Keep-Alive-Timer&quot; #61772 daemon prio=8 os_prio=0 tid=0x00007f89ac029000 nid=0x42db waiting on condition [0x00007f896e16c000]
+   java.lang.Thread.State: TIMED_WAITING (sleeping)
+	at java.lang.Thread.sleep(Native Method)
+	at sun.net.www.http.KeepAliveCache.run(KeepAliveCache.java:172)
+	at java.lang.Thread.run(Thread.java:745)
+
+&quot;elasticsearch[123.57.68.250][generic][T#166]&quot; #61767 daemon prio=5 os_prio=0 tid=0x00007f8988131800 nid=0x371f waiting on condition [0x00007f8963683000]
+   java.lang.Thread.State: TIMED_WAITING (parking)
+	at sun.misc.Unsafe.park(Native Method)
+	- parking to wait for  &lt;0x00000000d4ea7ec0&gt; (a java.util.concurrent.SynchronousQueue$TransferStack)
+	at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:215)
+	at java.util.concurrent.SynchronousQueue$TransferStack.awaitFulfill(SynchronousQueue.java:460)
+	at java.util.concurrent.SynchronousQueue$TransferStack.transfer(SynchronousQueue.java:362)
+	at java.util.concurrent.SynchronousQueue.poll(SynchronousQueue.java:941)
+	at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1066)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1127)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+
+&quot;Attach Listener&quot; #61725 daemon prio=9 os_prio=0 tid=0x00007f89c808f800 nid=0x4650 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+&quot;elasticsearch[123.57.68.250][suggest][T#4]&quot; #14495 daemon prio=5 os_prio=0 tid=0x00007f898012b000 nid=0x7a28 waiting on condition [0x00007f895d7fa000]
+   java.lang.Thread.State: WAITING (parking)
+	at sun.misc.Unsafe.park(Native Method)
+	- parking to wait for  &lt;0x00000000d5203d78&gt; (a java.util.concurrent.LinkedTransferQueue)
+	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+	at java.util.concurrent.LinkedTransferQueue.awaitMatch(LinkedTransferQueue.java:737)
+	at java.util.concurrent.LinkedTransferQueue.xfer(LinkedTransferQueue.java:647)
+	at java.util.concurrent.LinkedTransferQueue.take(LinkedTransferQueue.java:1265)
+	at org.elasticsearch.common.util.concurrent.SizeBlockingQueue.take(SizeBlockingQueue.java:162)
+	at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1067)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1127)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+
+&quot;elasticsearch[123.57.68.250][suggest][T#3]&quot; #14494 daemon prio=5 os_prio=0 tid=0x00007f898012a000 nid=0x7a26 waiting on condition [0x00007f895d8fb000]
+   java.lang.Thread.State: WAITING (parking)
+	at sun.misc.Unsafe.park(Native Method)
+	- parking to wait for  &lt;0x00000000d5203d78&gt; (a java.util.concurrent.LinkedTransferQueue)
+	at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+	at java.util.concurrent.LinkedTransferQueue.awaitMatch(LinkedTransferQueue.java:737)
+	at java.util.concurrent.LinkedTransferQueue.xfer(LinkedTransferQueue.java:647)
+</code></pre>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.jianshu.com/p/97f9fde1b962">java工具系列-jcmd</a></li>
+<li><a href="http://blog.csdn.net/winwill2012/article/details/46364849">jcmd命令使用</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E7%94%A8%E6%B3%95%E6%91%98%E8%A6%81">用法摘要</a></li>
+<li><a href="#%E9%80%89%E9%A1%B9">选项</a></li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/java-gong-ju-ji-jps/">
+              <h3 class="post-title">
+                Java工具集—jps
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

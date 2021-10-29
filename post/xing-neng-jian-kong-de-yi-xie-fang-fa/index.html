@@ -1,0 +1,252 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>性能监控的一些方法 | felayman</title>
+<link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="性能监控的一些方法 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+性能监控是开发所无法避免的情况,我们只要深切的理解性能监控的各种指标,才能开发出更加高效的程序
+
+前言
+一般来说,性能监控是运维人员需要密切关注了,但是作为一个开发人员,对性能的了解应该也是必不可少的,看过不少文章, 都没有站在一个开发者..." />
+    <meta name="keywords" content="Java并发" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://felayman.github.io">
+  <img class="avatar" src="https://felayman.github.io/images/avatar.png?v=1635511316691" alt="">
+  </a>
+  <h1 class="site-title">
+    felayman
+  </h1>
+  <p class="site-description">
+    知足且上进，温柔而坚定
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/felayman" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              性能监控的一些方法
+            </h2>
+            <div class="post-info">
+              <span>
+                2017-08-02
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+                <a href="https://felayman.github.io/tag/Java并发/" class="post-tag">
+                  # Java并发
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>性能监控是开发所无法避免的情况,我们只要深切的理解性能监控的各种指标,才能开发出更加高效的程序</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>一般来说,性能监控是运维人员需要密切关注了,但是作为一个开发人员,对性能的了解应该也是必不可少的,看过不少文章, 都没有站在一个开发者角度上<br>
+来讲述,开发一个高性能的应用程序,需要关注和了解哪些性能指标(这里是作为一名Java开发者的角度来考虑)</p>
+<p>一般来说,下面的指标是很好的判断依据</p>
+<ul>
+<li>PV</li>
+<li>QPS/TPS</li>
+<li>TPS</li>
+<li>RT</li>
+<li>Load</li>
+<li>CPU</li>
+<li>GC</li>
+<li>Heap</li>
+<li>IO</li>
+</ul>
+<h2 id="术语">术语</h2>
+<p><strong>PV</strong></p>
+<p>统计PV可以有多种方式</p>
+<ol>
+<li>前端统计,比如使用google、百度统计等</li>
+<li>后端埋点,每次后段请求都计算是一次pv</li>
+<li>通过统计nginx日志,可以使用spark离线统计</li>
+</ol>
+<p><strong>QPS</strong></p>
+<p>关于QPS,知乎某神给出了比较理想的计算方式,这里分享一下:</p>
+<p>QPS = req/sec = 请求数/秒</p>
+<p>【QPS计算PV和机器的方式】</p>
+<p>QPS统计方式 [一般使用 http_load 进行统计]</p>
+<p>QPS = 总请求数 / ( 进程总数 *   请求时间 )</p>
+<p>QPS: 单个进程每秒请求服务器的成功次数</p>
+<p>单台服务器每天PV计算</p>
+<p>公式1：每天总PV = QPS * 3600 * 6</p>
+<p>公式2：每天总PV = QPS * 3600 * 8</p>
+<p>服务器计算</p>
+<p>服务器数量 =   ceil( 每天总PV / 单台服务器每天总PV )</p>
+<p>【峰值QPS和机器计算公式】</p>
+<p>原理：每天80%的访问集中在20%的时间里，这20%时间叫做峰值时间</p>
+<p>公式：( 总PV数 * 80% ) / ( 每天秒数 * 20% ) = 峰值时间每秒请求数(QPS)</p>
+<p>机器：峰值时间每秒QPS / 单台机器的QPS   = 需要的机器</p>
+<p>问：每天300w PV 的在单台机器上，这台机器需要多少QPS？</p>
+<p>答：( 3000000 * 0.8 ) / (86400 * 0.2 ) = 139 (QPS)</p>
+<p>问：如果一台机器的QPS是58，需要几台机器来支持？</p>
+<p>答：139 / 58 = 3</p>
+<p><strong>RT</strong></p>
+<p>Response Time,响应时间，指客户端从发出一个请求开始计时，到客户端收到服务器端返回的响应结果结束所经历的时间</p>
+<p>响应时间由三部分组成：请求发送时间、网络传输时间、服务器处理时间</p>
+<p><strong>Load</strong></p>
+<p>LOAD负载,系统平均负载，定义为在特定时间间隔内运行队列中的平均进程数</p>
+<p>这个负载值比较理想的指标值是cpu总核数*0.7，如果长期超过这个指标值就需要警惕了。</p>
+<p><strong>CPU</strong></p>
+<p>cpu资源指的是应用服务器cpu资源占用率</p>
+<p>也指用户进程与系统进程消耗的CPU时间百分比，长时间情况下，一般可接受上限不超过85%(通常建议)</p>
+<p>cpu资源是判断系统处理能力以及应用是否稳定的重要参数</p>
+<p><strong>GC</strong></p>
+<p>java应用的性能指标必然不会少了GC,通常会避免使用FullGC，因为其会进行完全的垃圾清理，造成应用运行很慢，所以需要通过设置合适的jvm参数和GC策略来避免FGC</p>
+<p>通常的监控指标为GC次数和响应时间</p>
+<p><strong>Heap</strong></p>
+<p>内存利用率,内存利用率=（1-空闲内存/总内存大小）*100%，一般至少有10%可用内存，内存使用率可接受上限为85%(通常建议)</p>
+<p><strong>IO</strong></p>
+<p>磁盘主要用于存取数据，因此当说到IO操作的时候，就会存在两种相对应的操作，存数据的时候对应的是写IO操作，取数据的时候对应的是是读IO操作，一般使用% Disk Time（磁盘用于读写操作所占用的时间百分比）度量磁盘读写性能</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.zhihu.com/question/21556347">PV、TPS、QPS是怎么计算出来的</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E6%9C%AF%E8%AF%AD">术语</a></li>
+<li><a href="#%E5%8F%82%E8%80%83">参考</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://felayman.github.io/post/xing-neng-jian-kong-de-yi-xie-ji-chu-zhi-biao/">
+              <h3 class="post-title">
+                性能监控的一些基础指标
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://felayman.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

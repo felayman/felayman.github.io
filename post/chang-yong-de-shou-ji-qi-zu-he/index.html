@@ -2,17 +2,36 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hello Felayman | felayman</title>
+<title>常用的收集器组合 | felayman</title>
 <link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635511316691">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="Hello Felayman | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="常用的收集器组合 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="" />
-    <meta name="keywords" content="Gridea" />
+    <meta name="description" content="
+常用的收集器组合
+
+
+
+
+新生代GC策略
+年老代GC策略
+说明
+
+
+
+
+Serial
+Serial Old
+Serial和Serial Old都是单线程进行GC，特点就是GC时暂停所有应用线程。
+
+
+Serial
+CMS+Serial O..." />
+    <meta name="keywords" content="JVM,Java" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
   </head>
@@ -78,27 +97,78 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              Hello Felayman
+              常用的收集器组合
             </h2>
             <div class="post-info">
               <span>
-                2018-12-12
+                2017-03-18
               </span>
               <span>
-                0 min read
+                2 min read
               </span>
               
-                <a href="https://felayman.github.io/tag/6trdFVlPX/" class="post-tag">
-                  # Gridea
+                <a href="https://felayman.github.io/tag/JVM/" class="post-tag">
+                  # JVM
+                </a>
+              
+                <a href="https://felayman.github.io/tag/Java/" class="post-tag">
+                  # Java
                 </a>
               
             </div>
             
-              <img class="post-feature-image" src="https://felayman.github.io/post-images/hello-gridea.png" alt="">
-            
             <div class="post-content-wrapper">
               <div class="post-content">
-                
+                <blockquote>
+<p>常用的收集器组合</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>新生代GC策略</th>
+<th style="text-align:right">年老代GC策略</th>
+<th style="text-align:right">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Serial</td>
+<td style="text-align:right">Serial Old</td>
+<td style="text-align:right">Serial和Serial Old都是单线程进行GC，特点就是GC时暂停所有应用线程。</td>
+</tr>
+<tr>
+<td>Serial</td>
+<td style="text-align:right">CMS+Serial Old</td>
+<td style="text-align:right">CMS（Concurrent Mark Sweep）是并发GC，实现GC线程和应用线程并发工作，不需要暂停所有应用线程。另外，当CMS进行GC失败时，会自动使用Serial Old策略进行GC。</td>
+</tr>
+<tr>
+<td>ParNew</td>
+<td style="text-align:right">CMS</td>
+<td style="text-align:right">使用-XX:+UseParNewGC选项来开启。ParNew是Serial的并行版本，可以指定GC线程数，默认GC线程数为CPU的数量。可以使用-XX:ParallelGCThreads选项指定GC的线程数。</td>
+</tr>
+<tr>
+<td>ParNew</td>
+<td style="text-align:right">Serial Old</td>
+<td style="text-align:right">使用-XX:+UseParNewGC选项来开启。新生代使用ParNew GC策略，年老代默认使用Serial Old GC策略。</td>
+</tr>
+<tr>
+<td>Parallel Scavenge</td>
+<td style="text-align:right">Serial Old</td>
+<td style="text-align:right">Parallel Scavenge策略主要是关注一个可控的吞吐量：应用程序运行时间 / (应用程序运行时间 + GC时间)，可见这会使得CPU的利用率尽可能的高，适用于后台持久运行的应用程序，而不适用于交互较多的应用程。</td>
+</tr>
+<tr>
+<td>Parallel Scavenge</td>
+<td style="text-align:right">Parallel Old</td>
+<td style="text-align:right">Parallel Old是Serial Old的并行版本。</td>
+</tr>
+<tr>
+<td>G1GC</td>
+<td style="text-align:right">G1GC</td>
+<td style="text-align:right">Parallel -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC        #开启   -XX:MaxGCPauseMillis =50                  #暂停时间目标</br>-XX:GCPauseIntervalMillis =200#暂停间隔目标 <br/>-XX:+G1YoungGenSize=512m #年轻代大小<br/>-XX:SurvivorRatio=6 #幸存区比例。<br/></td>
+</tr>
+</tbody>
+</table>
+
               </div>
               <div class="toc-container">
                 
@@ -110,9 +180,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://felayman.github.io/post/2018-nian-du-shou-cang-hao-wen/">
+            <a href="https://felayman.github.io/post/jvm-jia-gou-jie-xi-zhuan/">
               <h3 class="post-title">
-                2018年度收藏好文
+                JVM架构解析(转)
               </h3>
             </a>
           </div>
