@@ -2,20 +2,17 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>JVM参数使用建议 | felayman</title>
+<title>Hello Felayman | felayman</title>
 <link rel="shortcut icon" href="https://felayman.github.io/favicon.ico?v=1635512186390">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://felayman.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="JVM参数使用建议 | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="Hello Felayman | felayman - Atom Feed" href="https://felayman.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="
-一个叫XXFox的JVM参数分析产品正式上线了,它不但能对系统的JVM参数进行合理性检查修改，提出专业的建议，还能基于环境生成JVM参数。大家可以通过访问http://xxfox.perfma.com 来检查下自己系统的JVM参数
-
-前言..." />
-    <meta name="keywords" content="JVM" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
   </head>
@@ -81,68 +78,26 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              JVM参数使用建议
+              Hello Felayman
             </h2>
             <div class="post-info">
               <span>
-                2018-03-16
+                2018-12-12
               </span>
               <span>
-                2 min read
+                0 min read
               </span>
-              
-                <a href="https://felayman.github.io/tag/JVM/" class="post-tag">
-                  # JVM
-                </a>
               
             </div>
             
+              <img class="post-feature-image" src="https://felayman.github.io/post-images/home.jpeg" alt="">
+            
             <div class="post-content-wrapper">
               <div class="post-content">
-                <blockquote>
-<p>一个叫XXFox的JVM参数分析产品正式上线了,它不但能对系统的JVM参数进行合理性检查修改，提出专业的建议，还能基于环境生成JVM参数。大家可以通过访问http://xxfox.perfma.com 来检查下自己系统的JVM参数</p>
-</blockquote>
-<h2 id="前言">前言</h2>
-<p>首先感谢JVM大神—笨神【<a href="http://lovestblog.cn/">你假笨</a> 】为我们带来的工具<a href="">JVMPocket</a> (微信小程序) ,为每一个对JVM感兴趣的同学都<br>
-能够了解JVM相关的参数,同时也感谢【<a href="http://lovestblog.cn/">你假笨</a> 】分享的那么多精华的JVM实战文章,帮助更多对JVM故障的<br>
-分析不足的人对JVM的更进一步的认识.</p>
-<p>今天跟大家分享一个【<a href="http://lovestblog.cn/">你假笨</a> 】的一款工具— xxfox</p>
-<p>xxfox是一个在线网站,可以帮我们了解和分析每个Java应用程序的JVM参数的含义以及建议.</p>
-<p>首先打开http://xxfox.perfma.com/,出现如下的界面:</p>
-<figure data-type="image" tabindex="1"><img src="http://felayman.oss-cn-beijing.aliyuncs.com/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87/xxfox.png" alt="" loading="lazy"></figure>
-<p>我们输入我们的Java应用程序的VM参数,这里我以我们线上的Elasticsearch的VM参数为例:</p>
-<pre><code class="language-java">-XX:CICompilerCount=4
--XX:CMSInitiatingOccupancyFraction=75
--XX:+DisableExplicitGC
--XX:+HeapDumpOnOutOfMemoryError
--XX:InitialHeapSize=4294967296
--XX:MaxHeapSize=17179869184
--XX:MaxNewSize=697892864
--XX:MaxTenuringThreshold=6
--XX:MinHeapDeltaBytes=196608
--XX:NewSize=697892864
--XX:OldPLABSize=16
--XX:OldSize=3597074432
--XX:+UseCMSInitiatingOccupancyOnly
--XX:+UseCompressedClassPointers
--XX:+UseCompressedOops
--XX:+UseConcMarkSweepGC
--XX:+UseParNewGC
-</code></pre>
-<p>输入到上图的分析框中,点击右边参数查询,则可以看到对应的每个VM参数的含义,以及笨神给出的建议和使用场景,如下图</p>
-<figure data-type="image" tabindex="2"><img src="http://felayman.oss-cn-beijing.aliyuncs.com/%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87/xxfox-1.png" alt="" loading="lazy"></figure>
-<p>上图只是部分截图,详细的内容可以参考: <a href="http://xxfox.perfma.com/jvm/query?t=d70b4c88-8dfb-4a7c-91cf-def43568c4d7">http://xxfox.perfma.com/jvm/query</a></p>
-
+                
               </div>
               <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
-</ul>
-</li>
-</ul>
-
+                
               </div>
             </div>
           </article>
@@ -151,9 +106,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://felayman.github.io/post/2017-nian-du-shou-cang-hao-wen/">
+            <a href="https://felayman.github.io/post/2018-nian-du-shou-cang-hao-wen/">
               <h3 class="post-title">
-                2017年度收藏好文
+                2018年度收藏好文
               </h3>
             </a>
           </div>
